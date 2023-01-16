@@ -20,19 +20,18 @@ chai.use(chaiHttp)
 
 
 describe('igBalance', () => {
-    beforeEach((done) => { //Before each test we empty the database
-    });
+    // beforeEach((done) => { //Before each test we empty the database
+    // });
 /*
   * Test the /GET route
   */
   describe('/GET igBalance', () => {
       it('it should return a 200', (done) => {
-        chai.request('http://localhost:8080')
+        chai.request(server)
             .get('/igBalance')
             .end((err, res) => {
                   res.should.have.status(200);
-                  res.body.should.be.a('array');
-                  res.body.length.should.be.eql(0);
+                  res.text.should.be.eql('ig balance!')
               done();
             });
       });
