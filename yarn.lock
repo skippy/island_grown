@@ -148,7 +148,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
+"@types/node@npm:*, @types/node@npm:>=8.1.0":
   version: 18.11.18
   resolution: "@types/node@npm:18.11.18"
   checksum: 03f17f9480f8d775c8a72da5ea7e9383db5f6d85aa5fefde90dd953a1449bd5e4ffde376f139da4f3744b4c83942166d2a7603969a6f8ea826edfb16e6e3b49d
@@ -818,6 +818,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dotenv@npm:^16.0.3":
+  version: 16.0.3
+  resolution: "dotenv@npm:16.0.3"
+  checksum: afcf03f373d7a6d62c7e9afea6328e62851d627a4e73f2e12d0a8deae1cd375892004f3021883f8aec85932cd2834b091f568ced92b4774625b321db83b827f8
+  languageName: node
+  linkType: hard
+
 "ee-first@npm:1.1.1":
   version: 1.1.1
   resolution: "ee-first@npm:1.1.1"
@@ -903,6 +910,16 @@ __metadata:
   version: 1.8.1
   resolution: "etag@npm:1.8.1"
   checksum: 571aeb3dbe0f2bbd4e4fadbdb44f325fc75335cd5f6f6b6a091e6a06a9f25ed5392f0863c5442acb0646787446e816f13cbfc6edce5b07658541dff573cab1ff
+  languageName: node
+  linkType: hard
+
+"express-validator@npm:^6.14.2":
+  version: 6.14.2
+  resolution: "express-validator@npm:6.14.2"
+  dependencies:
+    lodash: ^4.17.21
+    validator: ^13.7.0
+  checksum: f19641a8f8bde39ebf9418e8798c22736ffe1c90081f97a4b66d6d0f185bce2c20cbcc170d21c5d10f8fd410bb8de38c31592021be4306b9936bc3c566741dc0
   languageName: node
   linkType: hard
 
@@ -1538,10 +1555,13 @@ __metadata:
     chai-http: ^4.3.0
     convict: ^6.2.4
     convict-format-with-validator: ^6.2.0
+    dotenv: ^16.0.3
     escape-html: ^1.0.3
     express: ^4.18.2
+    express-validator: ^6.14.2
     js-yaml: ^4.1.0
     mocha: ^10.2.0
+    stripe: ^11.6.0
   languageName: unknown
   linkType: soft
 
@@ -1606,6 +1626,13 @@ __metadata:
   version: 4.5.0
   resolution: "lodash.clonedeep@npm:4.5.0"
   checksum: 92c46f094b064e876a23c97f57f81fbffd5d760bf2d8a1c61d85db6d1e488c66b0384c943abee4f6af7debf5ad4e4282e74ff83177c9e63d8ff081a4837c3489
+  languageName: node
+  linkType: hard
+
+"lodash@npm:^4.17.21":
+  version: 4.17.21
+  resolution: "lodash@npm:4.17.21"
+  checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
   languageName: node
   linkType: hard
 
@@ -2146,7 +2173,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:6.11.0, qs@npm:^6.5.1":
+"qs@npm:6.11.0, qs@npm:^6.11.0, qs@npm:^6.5.1":
   version: 6.11.0
   resolution: "qs@npm:6.11.0"
   dependencies:
@@ -2537,6 +2564,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"stripe@npm:^11.6.0":
+  version: 11.6.0
+  resolution: "stripe@npm:11.6.0"
+  dependencies:
+    "@types/node": ">=8.1.0"
+    qs: ^6.11.0
+  checksum: f959f2d4fbeacbcb4e11350012ffef0ae4708cd9bbe3800cdc747c5f1dcb688fde0733df722a624fceb35d0b486cf32d8e86097513f028a19c9d18a4e54ec75b
+  languageName: node
+  linkType: hard
+
 "superagent@npm:^3.7.0":
   version: 3.8.3
   resolution: "superagent@npm:3.8.3"
@@ -2730,7 +2767,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"validator@npm:^13.6.0":
+"validator@npm:^13.6.0, validator@npm:^13.7.0":
   version: 13.7.0
   resolution: "validator@npm:13.7.0"
   checksum: 2b83283de1222ca549a7ef57f46e8d49c6669213348db78b7045bce36a3b5843ff1e9f709ebf74574e06223461ee1f264f8cc9a26a0060a79a27de079d8286ef

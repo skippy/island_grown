@@ -14,22 +14,14 @@ const port = config.get('port')
 app.use('/igBalance', igBalance)
 app.use('/igSetup', igSetup)
 app.use('/helloHttp', helloHttp)
-
-// if(process.env.NODE_ENV !== 'production'){
-//   //disable on prod as the serverless function host will manage ports
-//   //TODO: can we make this 'better' for running on serverless components?
-//   app.listen(port, () => {
-//     console.log(`Local server listening on port ${port}`)
-//   })
-// }
-
-// Solution to expose multiple cloud functions locally
+// NOTE: google cloud functions needs app to be exported with the various end points specified
+// but the server.js and testing logic needs app just to be exported; so declaring it twice
 export { app as index, igBalance, igSetup, helloHttp }
+export { app }
 export { config }
-// export { app }
 // export { app as index, igBalance, igSetup, helloHttp }
 
-export default app;
+// export default app;
 // needed for testing with jest; not a fan!
 // module.exports = app; // for testing
 // export { config, app }

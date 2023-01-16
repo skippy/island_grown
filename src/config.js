@@ -1,4 +1,6 @@
-// require('dotenv').config()
+import * as dotenv from 'dotenv'
+dotenv.config()
+
 import convict from 'convict'
 import convict_format_with_validator from 'convict-format-with-validator'
 import yaml from 'js-yaml'
