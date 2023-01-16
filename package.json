@@ -1,0 +1,48 @@
+{
+  "name": "island_grown_card",
+  "version": "1.0.0",
+  "description": "Island Grown Card backend functionality",
+  "license": "MIT",
+  "author": "Adam Greene",
+  "type": "module",
+  "packageManager": "yarn@3.3.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skippy/island_grown.git"
+  },
+  "main": "src/app.js",
+  "scripts": {
+    "lint": "npx standard --fix && npx standard",
+    "test": "NODE_ENV=test mocha --timeout=60000 --exit",
+    "test-old": "yarn lint && mocha test/*.test.js --timeout=6000 --exit",
+    "test2": "NODE_ENV=test jest --testTimeout=10000 ",
+    "test3": "NODE_ENV=test mocha mocha test/*.test.js --timeout=6000 --exit",
+    "start": "functions-framework --target=index --debug",
+    "start2": "node src/server.js",
+    "predeploy": "npm test",
+    "deploy": "npx serverless deploy"
+  },
+  "bugs": {
+    "url": "https://github.com/skippy/island_grown/issues"
+  },
+  "homepage": "https://github.com/skippy/island_grown#readme",
+  "engines": {
+    "node": ">=16.x"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.1.3",
+    "convict": "^6.2.4",
+    "convict-format-with-validator": "^6.2.0",
+    "dotenv": "^16.0.3",
+    "escape-html": "^1.0.3",
+    "express": "^4.18.2",
+    "express-validator": "^6.14.2",
+    "js-yaml": "^4.1.0",
+    "stripe": "^11.6.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "chai-http": "^4.3.0",
+    "mocha": "^10.2.0"
+  }
+}
