@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 
 if(!/^sk_test_/i.test(config.get('stripe_api_key'))){
 	console.log('***** ERROR')
-	console.log('  stripe API key is NOT a test key')
+	console.log(`  stripe API key is NOT a test key: ${config.get('stripe_api_key').toString().substring(0, 6)}`)
 	console.log('  exiting')
 	process.exit(1);
 }
