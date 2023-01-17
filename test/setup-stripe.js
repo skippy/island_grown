@@ -1,14 +1,17 @@
 import config from '../src/config.js'
 import Stripe from 'stripe'
-
-if(!/^sk_test_/i.test(config.get('stripe_api_key'))){
+const stripeAPIKey = config.get('stripe_api_key')
+if(!/^sk_test_/i.test(stripeAPIKey)){
 	console.log('***** ERROR')
-	console.log(`  stripe API key is NOT a test key: ${config.get('stripe_api_key').toString().substring(0, 6)}`)
+	if(stripeAPIKey){
+		console.log(`  stripe API key is NOT a test key: ${stripeAPIKey.substring(0, 6)}`)
+	}else{
+		console.log('  stripe API key is NOT set.  set ENV STRIPE_API_KEY')
+	}
 	console.log('  exiting')
 	process.exit(1);
 }
-global.stripe = new Stripe(config.get('stripe_api_key'), { apiVersion: '2022-11-15' })
-// global.stripe = new Stripe(config.get('stripe_api_key'))
+global.stripe = new Stripe(stripeAPIKey, { apiVersion: '2022-11-15' })
 
 global.transactionCardholderEmail = 'jenny.rubin_has_transactions@example.com'
 global.transactionWithRefundCardholderEmail = 'jenny.rubin_has_transaction_and_refund@example.com'
