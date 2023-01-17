@@ -26,7 +26,6 @@ describe('/GET igBalance', () => {
     })
   })
 
-
   it('should return an empty authorizations and balance object if the cardholder has no transactions', async () => {
     const res = await chai.request(server)
       .get('/igBalance')
@@ -115,7 +114,7 @@ describe('/GET igBalance', () => {
   	  ['exp_year', 26],
   	  ['exp_year', new Date().getFullYear() + 20],
   	  ['exp_year', new Date().getFullYear() - 1]
-		]
+    ]
   	invalidVals.forEach(invalidParam => {
 		  it(`should return a 400 if ${invalidParam[0]} has invalid value ${invalidParam[1]}`, (done) => {
 		  		const invalidQuery = {
