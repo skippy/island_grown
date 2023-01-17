@@ -4,7 +4,7 @@ const stripeAPIKey = config.get('stripe_api_key')
 if(!/^sk_test_/i.test(stripeAPIKey)){
 	console.log('***** ERROR')
 	if(stripeAPIKey){
-		console.log(`  stripe API key is NOT a test key: ${stripeAPIKey.substring(0, 6)}`)
+		console.log(`  stripe API key is NOT a test key: ${stripeAPIKey.substring(0, 6)}...`)
 	}else{
 		console.log('  stripe API key is NOT set.  set ENV STRIPE_API_KEY')
 	}
