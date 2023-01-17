@@ -8,6 +8,7 @@ if(!/^sk_test_/i.test(stripeAPIKey)){
 	}else{
 		console.log('  stripe API key is NOT set.  set ENV STRIPE_API_KEY')
 	}
+console.log(process.env)
 	console.log('  exiting')
 	process.exit(1);
 }
