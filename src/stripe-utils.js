@@ -6,6 +6,7 @@ import Stripe from 'stripe'
 export const stripe = new Stripe(config.get('stripe_api_key'), { apiVersion: '2022-11-15' })
 
 export const getSpendBalanceTransactions = async (cardholder, includeTransactions=true) => {
+  if(!cardholder) return null
   const output = {
     spending_limit: currentAllTimeSpendingLimit(cardholder),
     spent: 0.0,
@@ -36,6 +37,7 @@ export const getSpendBalanceTransactions = async (cardholder, includeTransaction
 
 export const retrieveCardholderByEmail = async (email) => {
   if (!email) return null
+  if(email.trim() === '') return null
   email = email.toLowerCase()
   // const cards = []
   for await (const cardholder of stripe.issuing.cardholders.list({ email, status: 'active' })) {
