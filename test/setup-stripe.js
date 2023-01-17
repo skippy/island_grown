@@ -1,7 +1,7 @@
 import config from '../src/config.js'
 import Stripe from 'stripe'
-global.stripe = new Stripe(config.get('stripe_api_key'), { apiVersion: 'latest' })
-global.stripe = new Stripe(config.get('stripe_api_key'))
+global.stripe = new Stripe(config.get('stripe_api_key'), { apiVersion: '2022-11-15' })
+// global.stripe = new Stripe(config.get('stripe_api_key'))
 
 global.transactionsCardholderEmail = 'jenny.rubin_has_transactions@example.com'
 global.emptyCardholderEmail = 'jenny.rubin_empty@example.com'

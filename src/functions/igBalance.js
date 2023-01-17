@@ -2,7 +2,7 @@ import { body, check, validationResult } from 'express-validator'
 import config from '../config.js'
 
 import Stripe from 'stripe'
-const stripe = new Stripe(config.get('stripe_api_key'))
+const stripe = new Stripe(config.get('stripe_api_key'), { apiVersion: '2022-11-15' })
 
 /**
  * responds with a user's transaction history, spending limit, and balance
