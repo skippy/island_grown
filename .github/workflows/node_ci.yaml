@@ -23,3 +23,5 @@ jobs:
         run: yarn --frozen-lockfile
       - name: primary tests
         run: yarn run test
+        env:
+          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
