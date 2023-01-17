@@ -24,6 +24,12 @@ const config = convict({
     env: 'PORT',
     arg: 'port'
   },
+  log_level: {
+    format: ['debug', 'verbose', 'info', 'warn', 'error'],
+    default: 'info',
+    env: 'LOG_LEVEL',
+    arg: 'log_level'
+  },
   stripe_api_key: {
     doc: 'Stripe API key',
     format: '*',
@@ -42,8 +48,21 @@ const config = convict({
     format: 'int',
     default: null
   },
-  refill_amt: {
-    format: 'int',
+  refill_trigger_percent: {
+    format: 'Number',
+    default: null
+  },
+  refill_amts: {
+    format: function check (amts) {
+      if (!Array.isArray(amts)) {
+        throw new Error('must be an array of amounts (int or float)')
+      }
+      amts.forEach((amts) => {
+        if (isNaN(amts)) {
+          throw new Error('must be an integer or float')
+        }
+      })
+    },
     default: null
   },
   approved_postal_codes: {
@@ -77,6 +96,7 @@ const config = convict({
 
 // Load environment dependent configuration
 const env = config.get('env')
+config.loadFile('./config/default.json')
 config.loadFile('config/app_configs.yml')
 config.loadFile(`./config/${env}.json`)
 // Perform validation

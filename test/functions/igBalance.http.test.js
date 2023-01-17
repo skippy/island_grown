@@ -2,8 +2,8 @@ import chai, { expect } from 'chai'
 import chaiHttp from 'chai-http'
 import crypto from 'crypto'
 
-import server from '../src/server.js'
-import config from '../src/config.js'
+import server from '../../src/server.js'
+// import config from '../../src/config.js'
 
 const should = chai.should()
 chai.use(chaiHttp)
@@ -31,27 +31,55 @@ describe('/GET igBalance', () => {
       .get('/igBalance')
 	    .query({ email: global.emptyCardholderEmail })
     res.should.have.status(200)
-    JSON.parse(res.text).should.eql({
-	    spending_limit: 100,
-      total_spent: 0,
-      remaining_amt: 100,
-      authorizations: []
-    })
+    const responseObj = JSON.parse(res.text)
+    responseObj.spending_limit.should.eql(100)
+    responseObj.balance.should.eql(100)
+    responseObj.spent.should.eql(0)
+    responseObj.transactions.should.eql([])
+    //NOTE: keep deprecated
+    responseObj.total_spent.should.eql(0)
+    responseObj.remaining_amt.should.eql(100)
+    responseObj.authorizations.should.eql([])
   })
 
   it('should return an authorizations and balance object if the cardholder has transactions', async () => {
     const res = await chai.request(server)
       .get('/igBalance')
-	    .query({ email: global.transactionsCardholderEmail })
+	    .query({ email: global.transactionCardholderEmail })
     res.should.have.status(200)
     const responseObj = JSON.parse(res.text)
     responseObj.spending_limit.should.eql(100)
     responseObj.total_spent.should.eql(20)
     responseObj.remaining_amt.should.eql(80)
     responseObj.authorizations.length.should.eql(1)
-    Object.keys(responseObj.authorizations[0]).sort().should.eql(['amount', 'created_at', 'merchant'])
+    Object.keys(responseObj.authorizations[0]).sort().should.eql(['amount', 'created_at', 'merchant', 'type'])
     responseObj.authorizations[0].amount.should.eql(20)
     responseObj.authorizations[0].created_at.should.not.empty
+    Object.keys(responseObj.authorizations[0].merchant).sort().should.eql(['city', 'name', 'postal_code', 'state'])
+    responseObj.authorizations[0].merchant.city.should.not.empty
+    responseObj.authorizations[0].merchant.name.should.not.empty
+    responseObj.authorizations[0].merchant.postal_code.should.not.empty
+    responseObj.authorizations[0].merchant.state.should.not.empty
+  })
+
+  it('should return an authorizations and balance object if the cardholder has a refunded transaction', async () => {
+    const res = await chai.request(server)
+      .get('/igBalance')
+      .query({ email: global.transactionWithRefundCardholderEmail })
+    res.should.have.status(200)
+    const responseObj = JSON.parse(res.text)
+    responseObj.spending_limit.should.eql(100)
+    responseObj.total_spent.should.eql(0)
+    responseObj.remaining_amt.should.eql(100)
+    responseObj.authorizations.length.should.eql(2)
+    Object.keys(responseObj.authorizations[0]).sort().should.eql(['amount', 'created_at', 'merchant', 'type'])
+    responseObj.authorizations[0].amount.should.eql(20)
+    responseObj.authorizations[0].type.should.eql('refund')
+    responseObj.authorizations[0].created_at.should.not.empty
+    responseObj.authorizations[1].amount.should.eql(20)
+    responseObj.authorizations[1].type.should.eql('capture')
+    responseObj.authorizations[1].created_at.should.not.empty
+
     Object.keys(responseObj.authorizations[0].merchant).sort().should.eql(['city', 'name', 'postal_code', 'state'])
     responseObj.authorizations[0].merchant.city.should.not.empty
     responseObj.authorizations[0].merchant.name.should.not.empty

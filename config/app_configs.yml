@@ -1,5 +1,8 @@
 base_funding_amt: 150
-refill_amt: 75
+refill_trigger_percent: 0.75
+refill_amts:
+  - 75
+  - 50
 approved_postal_codes:
   - 98222
   - 98243

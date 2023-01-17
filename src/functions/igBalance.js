@@ -1,8 +1,7 @@
-import { body, check, validationResult } from 'express-validator'
+import { check, validationResult } from 'express-validator'
 import config from '../config.js'
-
-import Stripe from 'stripe'
-const stripe = new Stripe(config.get('stripe_api_key'), { apiVersion: '2022-11-15' })
+import * as stripeUtils from '../stripe-utils.js'
+import { logger } from '../logger.js'
 
 /**
  * responds with a user's transaction history, spending limit, and balance
@@ -20,9 +19,8 @@ export const igBalance = async (req, res) => {
   if (errMsgs.length > 0) {
     return res.status(400).send(errMsgs[0])
   }
-
-  const cardholder = await retrieveCardholderByEmail(req.query.email) ||
-                     await retrieveCardholderByLast4Exp(
+  const cardholder = await stripeUtils.retrieveCardholderByEmail(req.query.email) ||
+                     await stripeUtils.retrieveCardholderByLast4Exp(
                        req.query.last4,
                        req.query.exp_month,
                        req.query.exp_year
@@ -30,57 +28,13 @@ export const igBalance = async (req, res) => {
   if (!cardholder) {
     return res.json({})
   }
-  const output = {
-    spending_limit: currentAllTimeSpendingLimit(cardholder),
-    total_spent: 0.0,
-    remaining_amt: 0.0,
-    authorizations: []
-  }
-
-  for await (const transaction of stripe.issuing.transactions.list({ cardholder: cardholder.id, type: 'capture' })) {
-    const tran = {
-      // approved: a.approved,
-      amount: parseFloat((Math.abs(transaction.amount) / 100).toFixed(2)),
-      created_at: new Date(transaction.created * 1000)
-    }
-    tran.merchant = Object.fromEntries(
-      ['name', 'city', 'state', 'postal_code']
-        .map(key => [key, transaction.merchant_data[key]])
-    )
-    output.total_spent += tran.amount
-    output.authorizations.push(tran)
-  }
-  output.total_spent = parseFloat(output.total_spent.toFixed(2))
-  output.remaining_amt = parseFloat((output.spending_limit - output.total_spent).toFixed(2))
-  res.json(output)
-}
-
-const retrieveCardholderByEmail = async (email) => {
-  if (!email) return null
-  email = email.toLowerCase()
-  // const cards = []
-  for await (const cardholder of stripe.issuing.cardholders.list({ email, status: 'active' })) {
-    return cardholder
-  }
-  return null
-}
-
-const retrieveCardholderByLast4Exp = async (last4, exp_month, exp_year) => {
-  if (!last4 || !exp_month || !exp_year) return null
-  // const cards = []
-  for await (const card of stripe.issuing.cards.list({
-    last4,
-    exp_month,
-    exp_year
-  })) {
-    return card.cardholder
-  }
-  return null
-}
-
-const currentAllTimeSpendingLimit = (cardholder) => {
-  const sl = cardholder.spending_controls.spending_limits.find(l => l.interval === 'all_time')
-  return sl ? parseFloat((sl.amount / 100).toFixed(2)) : 0
+  const responseOutput = await stripeUtils.getSpendBalanceTransactions(cardholder)
+  //NOTE: for backwards compatability, we need to return it in this format
+  responseOutput.total_spent = responseOutput.spent
+  responseOutput.remaining_amt = responseOutput.balance
+  responseOutput.authorizations = responseOutput.transactions
+  responseOutput.deprecations = 'DEPRECATION NOTE: total_spent, remaining_amt, and authorizations are deprecated'
+  res.json(responseOutput)
 }
 
 const verifyParams = async (req) => {

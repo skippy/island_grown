@@ -13,12 +13,10 @@
   "main": "src/app.js",
   "scripts": {
     "lint": "npx standard --fix && npx standard",
-    "test": "NODE_ENV=test mocha --timeout=60000 --exit",
-    "test-old": "yarn lint && mocha test/*.test.js --timeout=6000 --exit",
-    "test2": "NODE_ENV=test jest --testTimeout=10000 ",
-    "test3": "NODE_ENV=test mocha mocha test/*.test.js --timeout=6000 --exit",
-    "start": "functions-framework --target=index --debug",
-    "start2": "node src/server.js",
+    "test": "NODE_ENV=test mocha test/**/*.js --timeout=10000 --exit",
+    "setupWebhooks": "node src/stripeWebhooks",
+    "start": "node src/server.js",
+    "start-old": "functions-framework --target=index --debug",
     "predeploy": "npm test",
     "deploy": "npx serverless deploy"
   },
@@ -31,6 +29,7 @@
   },
   "dependencies": {
     "@google-cloud/functions-framework": "^3.1.3",
+    "body-parser": "^1.20.1",
     "convict": "^6.2.4",
     "convict-format-with-validator": "^6.2.0",
     "dotenv": "^16.0.3",
@@ -38,7 +37,8 @@
     "express": "^4.18.2",
     "express-validator": "^6.14.2",
     "js-yaml": "^4.1.0",
-    "stripe": "^11.6.0"
+    "stripe": "^11.6.0",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "chai": "^4.3.7",
