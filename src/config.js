@@ -1,9 +1,9 @@
 import * as dotenv from 'dotenv'
-dotenv.config()
 
 import convict from 'convict'
 import convict_format_with_validator from 'convict-format-with-validator'
 import yaml from 'js-yaml'
+dotenv.config()
 
 convict.addParser({ extension: ['yml', 'yaml'], parse: yaml.load })
 convict.addFormats(convict_format_with_validator)
@@ -77,9 +77,8 @@ const config = convict({
 
 // Load environment dependent configuration
 const env = config.get('env')
-config.loadFile('./config/' + env + '.json')
 config.loadFile('config/app_configs.yml')
-
+config.loadFile(`./config/${env}.json`)
 // Perform validation
 config.validate({ allowed: 'strict' })
 

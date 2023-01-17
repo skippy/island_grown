@@ -5,6 +5,6 @@ const port = config.get('port')
 
 app.listen(port, () => {
   console.log(`Local server listening on port ${port}`)
-});
+})
 
-export default app;
+export default app

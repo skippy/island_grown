@@ -1,9 +1,8 @@
 import { body, check, validationResult } from 'express-validator'
 import config from '../config.js'
 
-import Stripe from 'stripe';
-const stripe = new Stripe(process.env.STRIPE_API_KEY);
-
+import Stripe from 'stripe'
+const stripe = new Stripe(config.get('stripe_api_key'))
 
 /**
  * responds with a user's transaction history, spending limit, and balance
@@ -18,7 +17,7 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY);
  */
 export const igBalance = async (req, res) => {
   const errMsgs = await verifyParams(req)
-  if(errMsgs.length > 0){
+  if (errMsgs.length > 0) {
     return res.status(400).send(errMsgs[0])
   }
 
@@ -28,10 +27,9 @@ export const igBalance = async (req, res) => {
                        req.query.exp_month,
                        req.query.exp_year
                      )
-  if(!cardholder){
-    return res.json({});
+  if (!cardholder) {
+    return res.json({})
   }
-
   const output = {
     spending_limit: currentAllTimeSpendingLimit(cardholder),
     total_spent: 0.0,
@@ -39,60 +37,55 @@ export const igBalance = async (req, res) => {
     authorizations: []
   }
 
-  for await (const transaction of stripe.issuing.transactions.list({cardholder: cardholder.id, type: 'capture'})) {
-    let tran = {
+  for await (const transaction of stripe.issuing.transactions.list({ cardholder: cardholder.id, type: 'capture' })) {
+    const tran = {
       // approved: a.approved,
-      amount: parseFloat((transaction.amount / 100).toFixed(2)),
+      amount: parseFloat((Math.abs(transaction.amount) / 100).toFixed(2)),
       created_at: new Date(transaction.created * 1000)
     }
     tran.merchant = Object.fromEntries(
       ['name', 'city', 'state', 'postal_code']
-      .map(key => [key, transaction.merchant_data[key]])
-    );
+        .map(key => [key, transaction.merchant_data[key]])
+    )
     output.total_spent += tran.amount
     output.authorizations.push(tran)
   }
   output.total_spent = parseFloat(output.total_spent.toFixed(2))
   output.remaining_amt = parseFloat((output.spending_limit - output.total_spent).toFixed(2))
-  res.json(output);
+  res.json(output)
 }
 
-
 const retrieveCardholderByEmail = async (email) => {
-  if(!email) return null
+  if (!email) return null
   email = email.toLowerCase()
   // const cards = []
-  for await (const cardholder of stripe.issuing.cardholders.list({email: email, status: 'active' })) {
-    return cardholder;
+  for await (const cardholder of stripe.issuing.cardholders.list({ email, status: 'active' })) {
+    return cardholder
   }
   return null
 }
 
-
 const retrieveCardholderByLast4Exp = async (last4, exp_month, exp_year) => {
-  if(!last4 || !exp_month || !exp_year) return null
+  if (!last4 || !exp_month || !exp_year) return null
   // const cards = []
   for await (const card of stripe.issuing.cards.list({
-    last4: last4,
-    exp_month: exp_month,
-    exp_year: exp_year})){
-      return card.cardholder
-   }
-   return null
+    last4,
+    exp_month,
+    exp_year
+  })) {
+    return card.cardholder
+  }
+  return null
 }
 
-
-
 const currentAllTimeSpendingLimit = (cardholder) => {
-  const sl = cardholder.spending_controls.spending_limits.find(l => l.interval === 'all_time' )
+  const sl = cardholder.spending_controls.spending_limits.find(l => l.interval === 'all_time')
   return sl ? parseFloat((sl.amount / 100).toFixed(2)) : 0
 }
 
-
-
 const verifyParams = async (req) => {
-  //NOTE: do NOT normalize email; that strips dots, or + from the email...
-  //TODO: make sure we normalize emails on the stripe side, perhaps during post-init
+  // NOTE: do NOT normalize email; that strips dots, or + from the email...
+  // TODO: make sure we normalize emails on the stripe side, perhaps during post-init
   //      webhook invocation.
   await check('email')
     .isEmail()
@@ -100,7 +93,7 @@ const verifyParams = async (req) => {
     // .normalizeEmail()
     .optional()
     .withMessage('email is not valid')
-    .run(req);
+    .run(req)
   await check('last4')
     .toInt()
     .custom(value => {
@@ -108,7 +101,7 @@ const verifyParams = async (req) => {
     })
     .optional()
     .withMessage('last4 needs to be the last 4 digits of a credit card')
-    .run(req);
+    .run(req)
   await check('exp_month')
     .toInt()
     .custom(value => {
@@ -116,7 +109,7 @@ const verifyParams = async (req) => {
     })
     .optional()
     .withMessage('exp_month must be between 1 and 12')
-    .run(req);
+    .run(req)
   await check('exp_year')
     .toInt()
     .custom(value => {
@@ -124,18 +117,18 @@ const verifyParams = async (req) => {
     })
     .optional()
     .withMessage('exp_year must be a 4 digit year, such as 2023, and this year or later')
-    .run(req);
+    .run(req)
 
-  const errors = validationResult(req);
+  const errors = validationResult(req)
   const errMsgs = []
   if (!errors.isEmpty()) {
     errMsgs.push(...errors.array().map(e => e.msg))
-  }else if(Object.keys(req.query).length === 0){
+  } else if (Object.keys(req.query).length === 0) {
     errMsgs.push('email or the last4, exp_month, and exp_year of the credit card are expected')
-  } else if (req.query.email === undefined ){
-    if( req.query.last4 === undefined ||
+  } else if (req.query.email === undefined) {
+    if (req.query.last4 === undefined ||
         req.query.exp_month === undefined ||
-        req.query.exp_year === undefined ){
+        req.query.exp_year === undefined) {
       errMsgs.push('last4, exp_month, and exp_year of the credit card are expected')
     }
   }

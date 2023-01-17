@@ -9,7 +9,6 @@ import { helloHttp } from './functions/helloHttp.js'
 
 const app = express()
 const port = config.get('port')
-// console.log(config.toString())
 
 app.use('/igBalance', igBalance)
 app.use('/igSetup', igSetup)
