@@ -1,7 +1,7 @@
 import { check, validationResult } from 'express-validator'
 import config from '../config.js'
 import * as stripeUtils from '../stripe-utils.js'
-import * as spendingControls from '../spending-controls.js'
+import { spendingControls } from '../spending-controls.js'
 import { logger } from '../logger.js'
 
 /**
@@ -31,10 +31,10 @@ export const igBalance = async (req, res) => {
   }
   const responseOutput = await spendingControls.getSpendBalanceTransactions(cardholder)
   //NOTE: for backwards compatability, we need to return it in this format
-  responseOutput.total_spent = responseOutput.spent
-  responseOutput.remaining_amt = responseOutput.balance
+  responseOutput.total_spent    = responseOutput.spend
+  responseOutput.remaining_amt  = responseOutput.balance
   responseOutput.authorizations = responseOutput.transactions
-  responseOutput.deprecations = 'DEPRECATION NOTE: total_spent, remaining_amt, and authorizations are deprecated'
+  responseOutput.deprecations   = 'DEPRECATION NOTE: total_spent, remaining_amt, and authorizations are deprecated'
   res.json(responseOutput)
 }
 

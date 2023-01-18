@@ -33,7 +33,7 @@ describe('/GET igBalance', () => {
     const responseObj = JSON.parse(res.text)
     responseObj.spending_limit.should.eql(150)
     responseObj.balance.should.eql(150)
-    responseObj.spent.should.eql(0)
+    responseObj.spend.should.eql(0)
     responseObj.transactions.should.eql([])
     //NOTE: keep deprecated
     responseObj.total_spent.should.eql(0)

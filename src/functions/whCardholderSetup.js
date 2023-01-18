@@ -1,6 +1,6 @@
 import config from '../config.js'
 import * as stripeUtils from '../stripe-utils.js'
-import * as spendingControls from '../spending-controls.js'
+import { spendingControls } from '../spending-controls.js'
 import { logger } from '../logger.js'
 
 /**
@@ -19,7 +19,8 @@ export const whCardholderSetup = async (req, res) => {
   let event;
 
   try {
-    event = stripeUtils.stripe.webhooks.constructEvent(req.rawBody, sig, config.get('stripe_auth_webhook_secret'));
+    const whSecret = config.get('stripe_auth_webhook_secret')
+    event = stripeUtils.stripe.webhooks.constructEvent(req.rawBody, sig, whSecret);
   } catch (err) {
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;
@@ -35,7 +36,7 @@ export const whCardholderSetup = async (req, res) => {
     case 'issuing_cardholder.created':
     case 'issuing_cardholder.updated':
       const issuingCardholder = event.data.object;
-      const updateData = { }
+      const updateData = await spendingControls.recomputeSpendingLimits(issuingCardholder) || {}
 
       // normalize email
       const updatedEmail = normalizeEmail(issuingCardholder.email)
@@ -43,55 +44,7 @@ export const whCardholderSetup = async (req, res) => {
         updateData.email = updatedEmail
       }
 
-      // update spending limits and refills if needed
-      const spendingInfo = await spendingControls.getSpendBalanceTransactions(issuingCardholder,false)
-
-      // make sure spending limit is setup!
-      let setupSpendingLimitRefills = false
-      if(issuingCardholder.metadata.numRefills === undefined){
-        logger.debug("initializing metadata.numRefills")
-        issuingCardholder.metadata.numRefills = 0
-        setupSpendingLimitRefills = true
-      }
-
-      if(issuingCardholder.metadata.base_funding_amt === undefined){
-        logger.debug("initializing metadata.base_funding_amt")
-        issuingCardholder.metadata.base_funding_amt = config.get('base_funding_amt')
-        setupSpendingLimitRefills = true
-      }
-
-      if(issuingCardholder.spending_controls.spending_limits === undefined ||
-         issuingCardholder.spending_controls.spending_limits[0] === undefined){
-        logger.debug("initializing spending limits")
-        setupSpendingLimitRefills = true
-      }
-
-      if(spendingInfo.spent > spendingInfo.spending_limit * config.get('refill_trigger_percent')){
-        logger.debug("spent is close to spending limit; let's see if we can refill")
-        setupSpendingLimitRefills = true
-      }
-
-      if(setupSpendingLimitRefills){
-        const refillIndex = issuingCardholder.metadata.numRefills
-        const refillAmts = config.get('refill_amts')
-        const refillAmt = refillAmts[refillIndex]
-        if(refillAmt &&
-           spendingInfo.spent > spendingInfo.spending_limit * config.get('refill_trigger_percent')){
-          logger.debug("spent is close to spending limit and refill is available")
-          spendingInfo.spending_limit += refillAmt
-          issuingCardholder.metadata.numRefills++;
-          issuingCardholder.metadata[`refill_${refillIndex}_amt`] = refillAmt
-          issuingCardholder.metadata[`refill_${refillIndex}_date`] = new Date().toLocaleDateString()
-          logger.debug("adding refill")
-        }
-        updateData.metadata = issuingCardholder.metadata
-        updateData.spending_controls = {
-          spending_limits: [{ amount: (spendingInfo.spending_limit * 100),
-                              interval: 'all_time'
-                           }]
-        }
-      }
-      if(Object.keys(updateData).length !== 0){
+      if(Object.keys(updateData).length > 0){
         logger.info("updating cardholder data")
         logger.debug(updateData)
         await stripeUtils.stripe.issuing.cardholders.update(

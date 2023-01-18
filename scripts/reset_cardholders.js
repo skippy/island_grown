@@ -8,6 +8,7 @@ import yargs from 'yargs/yargs';
 
 import config from '../src/config.js'
 import * as stripeUtils from '../src/stripe-utils.js'
+import { spendingControls } from '../src/spending-controls.js'
 
 
 const options = yargs(process.argv.slice(2))
@@ -18,25 +19,8 @@ const options = yargs(process.argv.slice(2))
 
 console.log("***** Resetting Cardholders and Cards to default metadata and spending limits")
 const clearValues =  {
-    metadata: {
-        base_funding_amt: null,
-        numRefills: null,
-        refill_0_amt: null,
-        refill_0_date: null,
-        refill_1_amt: null,
-        refill_1_date: null,
-        refill_2_amt: null,
-        refill_2_date: null,
-        refill_3_amt: null,
-        refill_3_date: null,
-        refill_4_amt: null,
-        refill_4_date: null,
-        funding_traunch_initial: null,
-        funding_traunch_second_refill: null,
-        trial: null,
-        Trial: null
-    },
-    spending_controls: { spending_limits: null}
+    metadata: spendingControls.defaultMetadata(true),
+    spending_controls: spendingControls.defaultSpendingControls()
   }
 
 const listArgs = {}
@@ -44,7 +28,6 @@ if(options.email){
     console.log(`    Searching for cardholder email: '${options.email}'`)
     listArgs.email = options.email
 }
-
 
 for await (const cardholder of stripeUtils.stripe.issuing.cardholders.list(listArgs)) {
     console.log(`resetting ${cardholder.email} (${cardholder.id})`)

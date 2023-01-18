@@ -1,4 +1,5 @@
 import config from '../src/config.js'
+import { spendingControls } from '../src/spending-controls.js'
 import Stripe from 'stripe'
 const stripeAPIKey = config.get('stripe_api_key')
 
@@ -35,9 +36,8 @@ const setupNoTransactionsCardholder = async () => {
 	  phone_number: '+18008675309',
 	  status: 'active',
 	  type: 'individual',
-	  spending_controls: {
-	    spending_limits: [{ amount: config.get('base_funding_amt') * 100, interval: 'all_time' }]
-	  },
+	  metadata: spendingControls.defaultMetadata(),
+	  spending_controls: spendingControls.defaultSpendingControls(),
 	  billing: {
 	    address: {
 	      line1: '123 Main Street',
@@ -75,9 +75,8 @@ const setupOneTransactionWithRefundCardholder = async () => {
 	  phone_number: '+18008675309',
 	  status: 'active',
 	  type: 'individual',
-	  spending_controls: {
-	    spending_limits: [{ amount: config.get('base_funding_amt') * 100, interval: 'all_time' }]
-	  },
+	  metadata: spendingControls.defaultMetadata(),
+	  spending_controls: spendingControls.defaultSpendingControls(),
 	  billing: {
 	    address: {
 	      line1: '123 Main Street',
@@ -154,9 +153,8 @@ const setupOneTransactionCardholder = async () => {
 	  phone_number: '+18008675309',
 	  status: 'active',
 	  type: 'individual',
-	  spending_controls: {
-	    spending_limits: [{ amount: config.get('base_funding_amt') * 100, interval: 'all_time' }]
-	  },
+	  metadata: spendingControls.defaultMetadata(),
+	  spending_controls: spendingControls.defaultSpendingControls(),
 	  billing: {
 	    address: {
 	      line1: '123 Main Street',

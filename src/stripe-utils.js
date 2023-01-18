@@ -3,7 +3,8 @@ import config from './config.js'
 
 import Stripe from 'stripe'
 //NOTE: remove API version and use stripe dashboard
-export const stripe = new Stripe(config.get('stripe_api_key'), { apiVersion: '2022-11-15' })
+export const stripeVersion = '2022-11-15'
+export const stripe = new Stripe(config.get('stripe_api_key'), { apiVersion: stripeVersion })
 
 
 export const retrieveCardholderByEmail = async (email) => {
