@@ -143,6 +143,8 @@ describe('getSpendBalanceTransactions', () => {
     expect(response).to.eql({
       spending_limit: chSpendingLimitAmt,
       spend: 0,
+      pending_transactions: 0,
+      pending_amt: 0,
       balance: chSpendingLimitAmt,
       transactions: []
     })
@@ -182,6 +184,19 @@ describe('getSpendBalanceTransactions', () => {
     expect(response.transactions[1].type).to.eql('capture')
   })
 
+  it('should correctly handle a transaction and pending authorizations', async() => {
+    const ch = await stripeUtils.retrieveCardholderByEmail(global.transactionPendingCardholderEmail)
+    const chSpendingLimitAmt = ch.spending_controls.spending_limits[0].amount/100
+    let response = await spendingControls.getSpendBalanceTransactions(ch)
+    expect(response).to.not.be.null;
+    expect(response.spending_limit).to.eql(chSpendingLimitAmt)
+    expect(response.spend).to.eql(30)
+    expect(response.pending_transactions).to.eql(1)
+    expect(response.pending_amt).to.eql(10)
+    expect(response.balance).to.eql(chSpendingLimitAmt-30)
+    expect(response.transactions.length).to.eql(1)
+    expect(response.transactions[0].type).to.eql('capture')
+  })
 
 
 })

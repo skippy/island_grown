@@ -118,6 +118,8 @@ const getSpendBalanceTransactions = async (cardholder, includeTransactions=true)
     spending_limit: currentAllTimeSpendingLimit(cardholder),
     spend: 0.0,
     balance: 0.0,
+    pending_transactions: 0,
+    pending_amt: 0
   }
   if(includeTransactions) output.transactions = []
   for await (const transaction of stripeUtils.stripe.issuing.transactions.list({ cardholder: cardholder.id })) {
@@ -137,6 +139,14 @@ const getSpendBalanceTransactions = async (cardholder, includeTransactions=true)
     }
     if(includeTransactions) output.transactions.push(tran)
   }
+  for await (const pendingAuths of stripeUtils.stripe.issuing.authorizations.list({ cardholder: cardholder.id, status: 'pending'})) {
+    if(output.pending_transactions === 0) logger.debug("pending authorizations")
+    output.pending_transactions++
+    output.pending_amt += pendingAuths.amount / 100
+  }
+  output.spend  += output.pending_amt
+
+  output.pending_amt = parseFloat(output.pending_amt.toFixed(2))
   output.spend   = parseFloat(output.spend.toFixed(2))
   output.balance = parseFloat((output.spending_limit - output.spend).toFixed(2))
   return output
