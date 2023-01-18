@@ -23,7 +23,7 @@ export const whAuthorization = async (req, res) => {
   // Handle the event
   switch (event.type) {
     case 'issuing_authorization.request':
-    case 'issuing_authorization.created':
+    // case 'issuing_authorization.created':
       const issuingAuth = event.data.object;
       const merchantData = issuingAuth.merchant_data
       logger.debug('Merchant Data')
@@ -31,26 +31,37 @@ export const whAuthorization = async (req, res) => {
 
       const merchantName = merchantData.name
       const merchantNameRegEx = new RegExp(escapeRegex(merchantName), 'i');
+
       const vendors = config.get('approved_vendors')
       const foundVendor = Object.keys(vendors).find(vn => merchantNameRegEx.test(vn) )
       const vendorVerified = foundVendor ? vendors[foundVendor].toString() === merchantData.postal_code.toString() : false
       logger.debug(`found vendor? ${foundVendor || false} -- verified vendor? ${vendorVerified || false}`)
-      if(vendorVerified){
-        logger.info(`auth approved: ${issuingAuth.id}`)
-        const authResponse = await stripeUtils.stripe.issuing.authorizations.approve(issuingAuth.id)
-        // logger.debug(authResponse)
 
-      }else{
-        logger.info(`auth declined: ${issuingAuth.id}`)
-        const authResponse = await stripeUtils.stripe.issuing.authorizations.decline(issuingAuth.id,
-                              { metadata: {
-                                reason: "not a verified vendor",
-                                vendor_found: foundVendor || false,
-                                mapped_postal_code: vendors[foundVendor] || false
-                              }})
-        // logger.debug(authResponse)
-      }
+      // if(vendorVerified){
+      //   logger.info(`auth approved? ${vendorVerified}: ${issuingAuth.id}`)
+      //   await stripeUtils.stripe.issuing.authorizations.approve(issuingAuth.id)
+      // }else{
+      //   logger.info(`auth declined: ${issuingAuth.id}`)
+      //   await stripeUtils.stripe.issuing.authorizations.decline(issuingAuth.id,
+      //     { metadata: {
+      //       reason: "not a verified vendor",
+      //       vendor_found: foundVendor || false,
+      //       mapped_postal_code: vendors[foundVendor] || false
+      //     }})
+      // }
+      logger.info(`auth approved? ${vendorVerified}: ${issuingAuth.id}`)
+      res.writeHead(200, {"Stripe-Version": stripeUtils.stripeVersion, "Content-Type": "application/json"});
+      var body = JSON.stringify({
+        "approved": vendorVerified,
+        "metadata": {
+                      vendor_found: foundVendor || false,
+                      mapped_postal_code: vendors[foundVendor] || false
+                    }
 
+      })
+
+
+      return res.end(body)
       break;
     default:
       logger.warn(`Unhandled event type ${event.type}`);
@@ -60,7 +71,7 @@ export const whAuthorization = async (req, res) => {
 }
 
 
-function escapeRegex(string) {
+const escapeRegex = (string) => {
   return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
