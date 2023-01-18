@@ -9,7 +9,7 @@ on:
     #  allow manual updating
 
 jobs:
-  scrapper:
+  refill_check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
