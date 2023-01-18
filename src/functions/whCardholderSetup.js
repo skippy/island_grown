@@ -1,5 +1,6 @@
 import config from '../config.js'
 import * as stripeUtils from '../stripe-utils.js'
+import * as spendingControls from '../spending-controls.js'
 import { logger } from '../logger.js'
 
 /**
@@ -43,30 +44,33 @@ export const whCardholderSetup = async (req, res) => {
       }
 
       // update spending limits and refills if needed
-      const spendingInfo = await stripeUtils.getSpendBalanceTransactions(issuingCardholder,false)
+      const spendingInfo = await spendingControls.getSpendBalanceTransactions(issuingCardholder,false)
 
       // make sure spending limit is setup!
       let setupSpendingLimitRefills = false
-      if(!issuingCardholder.metadata.numRefills){
+      if(issuingCardholder.metadata.numRefills === undefined){
         logger.debug("initializing metadata.numRefills")
         issuingCardholder.metadata.numRefills = 0
         setupSpendingLimitRefills = true
       }
-      if(!issuingCardholder.metadata.base_funding_amt){
+
+      if(issuingCardholder.metadata.base_funding_amt === undefined){
         logger.debug("initializing metadata.base_funding_amt")
         issuingCardholder.metadata.base_funding_amt = config.get('base_funding_amt')
         setupSpendingLimitRefills = true
       }
 
-      if(!issuingCardholder.spending_controls.spending_limits ||
-         !issuingCardholder.spending_controls.spending_limits[0]){
+      if(issuingCardholder.spending_controls.spending_limits === undefined ||
+         issuingCardholder.spending_controls.spending_limits[0] === undefined){
         logger.debug("initializing spending limits")
         setupSpendingLimitRefills = true
       }
+
       if(spendingInfo.spent > spendingInfo.spending_limit * config.get('refill_trigger_percent')){
         logger.debug("spent is close to spending limit; let's see if we can refill")
         setupSpendingLimitRefills = true
       }
+
       if(setupSpendingLimitRefills){
         const refillIndex = issuingCardholder.metadata.numRefills
         const refillAmts = config.get('refill_amts')
@@ -87,12 +91,10 @@ export const whCardholderSetup = async (req, res) => {
                            }]
         }
       }
-
       if(Object.keys(updateData).length !== 0){
         logger.info("updating cardholder data")
         logger.debug(updateData)
-
-        const cardholder = await stripeUtils.stripe.issuing.cardholders.update(
+        await stripeUtils.stripe.issuing.cardholders.update(
           issuingCardholder.id,
           updateData
         );

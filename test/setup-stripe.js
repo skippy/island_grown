@@ -1,6 +1,7 @@
 import config from '../src/config.js'
 import Stripe from 'stripe'
 const stripeAPIKey = config.get('stripe_api_key')
+
 if(!/^sk_test_/i.test(stripeAPIKey)){
 	console.log('***** ERROR')
 	if(stripeAPIKey){
@@ -35,7 +36,7 @@ const setupNoTransactionsCardholder = async () => {
 	  status: 'active',
 	  type: 'individual',
 	  spending_controls: {
-	    spending_limits: [{ amount: 10000, interval: 'all_time' }]
+	    spending_limits: [{ amount: config.get('base_funding_amt') * 100, interval: 'all_time' }]
 	  },
 	  billing: {
 	    address: {
@@ -57,7 +58,7 @@ const setupNoTransactionsCardholder = async () => {
 }
 
 const setupOneTransactionWithRefundCardholder = async () => {
-	  let cardholder = (await stripe.issuing.cardholders.list({ email: global.transactionWithRefundCardholderEmail })).data[0]
+  let cardholder = (await stripe.issuing.cardholders.list({ email: global.transactionWithRefundCardholderEmail })).data[0]
   if (cardholder) return
   console.log('** creating initial stripe cardholder with 1 transaction and a refund')
 
@@ -75,7 +76,7 @@ const setupOneTransactionWithRefundCardholder = async () => {
 	  status: 'active',
 	  type: 'individual',
 	  spending_controls: {
-	    spending_limits: [{ amount: 10000, interval: 'all_time' }]
+	    spending_limits: [{ amount: config.get('base_funding_amt') * 100, interval: 'all_time' }]
 	  },
 	  billing: {
 	    address: {
@@ -154,7 +155,7 @@ const setupOneTransactionCardholder = async () => {
 	  status: 'active',
 	  type: 'individual',
 	  spending_controls: {
-	    spending_limits: [{ amount: 10000, interval: 'all_time' }]
+	    spending_limits: [{ amount: config.get('base_funding_amt') * 100, interval: 'all_time' }]
 	  },
 	  billing: {
 	    address: {
