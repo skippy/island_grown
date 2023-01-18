@@ -36,7 +36,7 @@ export const whCardholderSetup = async (req, res) => {
     case 'issuing_cardholder.created':
     case 'issuing_cardholder.updated':
       const issuingCardholder = event.data.object;
-      const updateData = await spendingControls.recomputeSpendingLimits(issuingCardholder) || {}
+      const updateData = await spendingControls.recomputeSpendingLimits(issuingCardholder)
 
       // normalize email
       const updatedEmail = normalizeEmail(issuingCardholder.email)
