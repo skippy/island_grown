@@ -12,7 +12,9 @@ import * as stripeUtils from '../src/stripe-utils.js'
 
 const options = yargs(process.argv.slice(2))
  .option("f", { alias: "force", describe: "persist changes", demandOption: true })
+ .option("e", { alias: "email", describe: "email of cardholder to reset" })
  .argv;
+
 
 console.log("***** Resetting Cardholders and Cards to default metadata and spending limits")
 const clearValues =  {
@@ -37,8 +39,14 @@ const clearValues =  {
     spending_controls: { spending_limits: null}
   }
 
+const listArgs = {}
+if(options.email){
+    console.log(`    Searching for cardholder email: '${options.email}'`)
+    listArgs.email = options.email
+}
 
-for await (const cardholder of stripeUtils.stripe.issuing.cardholders.list()) {
+
+for await (const cardholder of stripeUtils.stripe.issuing.cardholders.list(listArgs)) {
     console.log(`resetting ${cardholder.email} (${cardholder.id})`)
     // Do something with customer
     const cards = (await stripeUtils.stripe.issuing.cards.list({ cardholder: cardholder.id })).data
