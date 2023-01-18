@@ -2,7 +2,7 @@
 
 import config from '../src/config.js'
 import Stripe from 'stripe'
-const stripe = new Stripe(config.get('stripe_api_key'), { apiVersion: '2022-11-15' })
+import * as stripeUtils from '../src/stripe-utils.js'
 
 console.log('** Stripe Webhooks')
 // for await (var webhookEndpoints in await stripe.webhookEndpoints()) {
@@ -11,7 +11,7 @@ console.log('** Stripe Webhooks')
 // 	console.log(`     ${webhookEndpoints.description}`)
 // }
 
-for await (const we of stripe.webhookEndpoints.list()) {
+for await (const we of stripeUtils.stripe.webhookEndpoints.list()) {
 console.log(we)
 	console.log(`  ${we.id}`)
 	console.log(`     url: ${we.url}`)

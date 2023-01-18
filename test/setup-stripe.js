@@ -1,5 +1,6 @@
 import config from '../src/config.js'
 import { spendingControls } from '../src/spending-controls.js'
+import * as stripeUtils from '../src/stripe-utils.js'
 import Stripe from 'stripe'
 const stripeAPIKey = config.get('stripe_api_key')
 
@@ -13,7 +14,9 @@ if(!/^sk_test_/i.test(stripeAPIKey)){
 	console.log('  exiting')
 	process.exit(1);
 }
-global.stripe = new Stripe(stripeAPIKey, { apiVersion: '2022-11-15' })
+//NOTE: do NOT use the stripe defined in stripeUtils because we want to make sure the
+//right API key is being used
+global.stripe = new Stripe(stripeAPIKey, { apiVersion: stripeUtils.apiVersion })
 
 global.transactionCardholderEmail = 'jenny.rubin_has_transactions@example.com'
 global.transactionWithRefundCardholderEmail = 'jenny.rubin_has_transaction_and_refund@example.com'
