@@ -14,9 +14,8 @@
   "scripts": {
     "lint": "npx standard --fix && npx standard",
     "test": "NODE_ENV=test mocha test/**/*.js --timeout=50000 --exit --reporter spec --ui bdd",
-    "setupWebhooks": "node scripts/stripeWebhooks",
+    "stripeWebhooks": "node scripts/stripeWebhooks",
     "start": "node src/server.js",
-    "start-old": "functions-framework --target=index --debug",
     "predeploy": "npm test",
     "deploy": "npx serverless deploy"
   },

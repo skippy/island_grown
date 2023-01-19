@@ -8,10 +8,13 @@ import config from '../../src/config.js'
 
 chai.use(chaiHttp)
 const should = chai.should()
-const sampleCardholder = (await stripeUtils.stripe.issuing.cardholders.list({ email: global.emptyCardholderEmail })).data[0]
 
 describe('/POST whCardholderSetup', () => {
   const sandbox = sinon.createSandbox();
+  let sampleCardholder
+  before(async () => {
+    sampleCardholder = (await stripeUtils.stripe.issuing.cardholders.list({ email: global.emptyCardholderEmail })).data[0]
+  })
 
   let constructEventStub, cardholdersUpdateStub
   beforeEach(() => {
@@ -54,11 +57,11 @@ describe('/POST whCardholderSetup', () => {
 //     res.should.have.status(200)
 //     expect(constructEventStub.calledOnce).to.be.true
 //     expect(cardholdersUpdateStub.calledOnce).to.be.true
-//     expect(cardholdersUpdateStub.getCall(0).args).to.eql(expectedCardholderUpdateObject())
+//     expect(cardholdersUpdateStub.getCall(0).args).to.eql(expectedCardholderUpdateObject(sampleCardholder))
 //   })
 
   it('should not update the cardholder if the spending_limits and metadata are setup with defaults', async () => {
-    const expectedVals = expectedCardholderUpdateObject()[1]
+    const expectedVals = expectedCardholderUpdateObject(sampleCardholder)[1]
     sampleCardholder.spending_controls = expectedVals.spending_controls
     sampleCardholder.metadata          = expectedVals.metadata
 
@@ -84,9 +87,9 @@ describe('/POST whCardholderSetup', () => {
 })
 
 
-const expectedCardholderUpdateObject = () => {
+const expectedCardholderUpdateObject = (cardholder) => {
   return [
-    sampleCardholder.id,
+    cardholder.id,
     {
       metadata: { numRefills: 0, base_funding_amt: config.get('base_funding_amt') },
       spending_controls: { spending_limits: [ { amount: config.get('base_funding_amt') * 100, interval: config.get('spending_limit_interval') } ] }

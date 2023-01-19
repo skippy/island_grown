@@ -24,6 +24,7 @@ eval "gcloud functions deploy ig-balance ${default_function_opts} \
   --min-instances 1 \
   --max-instances 5 \
   --timeout 10 \
+  --ingress-settings=all \
   --set-secrets 'STRIPE_API_KEY=${stripe_api_key_read_name}:latest'"
 
 
@@ -34,6 +35,7 @@ eval "gcloud functions deploy wh-cardholder-setup ${default_function_opts} \
   --min-instances 1 \
   --max-instances 2 \
   --timeout 10 \
+  --ingress-settings=all \
   --set-secrets 'STRIPE_API_KEY=${stripe_api_key_write_name}:latest' \
   --set-secrets 'STRIPE_AUTH_WEBHOOK_SECRET=${stripe_api_key_cardholder_setup_name}:latest'"
 
@@ -45,6 +47,7 @@ eval "gcloud functions deploy wh-authorization ${default_function_opts} \
   --min-instances 1 \
   --max-instances 2 \
   --timeout 10 \
+  --ingress-settings=all \
   --set-secrets 'STRIPE_API_KEY=${stripe_api_key_write_name}:latest' \
   --set-secrets 'STRIPE_AUTH_WEBHOOK_SECRET=${stripe_api_key_auth_webhook_name}:latest'"
 
@@ -56,7 +59,7 @@ eval "gcloud functions deploy ig-update-cardholder-spending-rules ${default_func
   --min-instances 0 \
   --max-instances 1 \
   --timeout 1200 \
-  --region us-west1 \
+  --ingress-settings=all \
   --service-account ${service_acct} \
   --set-secrets 'STRIPE_API_KEY=${stripe_api_key_write_name}:latest'"
 
@@ -76,6 +79,11 @@ eval "gcloud scheduler jobs ${gcp_scheduler_cmd} http ${job_name} \
   --attempt-deadline=1800s \
   --oidc-service-account-email=${service_acct} \
   --uri=${update_cardholder_spending_rules_uri}"
+
+
+
+# gcloud dns --project=sjfood managed-zones create island-grown --description="" --dns-name="com." --visibility="public" --dnssec-state="on" --log-dns-queries
+
 
 local balance_uri=`gcloud functions describe ig-balance --format='json' | jq -r '.serviceConfig.uri'`
 local auth_uri=`gcloud functions describe wh-authorization --format='json' | jq -r '.serviceConfig.uri'`

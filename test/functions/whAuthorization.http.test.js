@@ -8,11 +8,14 @@ import config from '../../src/config.js'
 
 chai.use(chaiHttp)
 const should = chai.should()
-const sampleCardholder = (await stripeUtils.stripe.issuing.cardholders.list({ email: global.setupOneTransactionCardholder })).data[0]
-const sampleAuthorization = (await stripeUtils.stripe.issuing.authorizations.list({ cardholder: sampleCardholder.id, limit: 1 })).data[0]
 
 describe('/POST whAuthorization', () => {
   const sandbox = sinon.createSandbox();
+  let sampleCardholder, sampleAuthorization
+  before(async () => {
+    sampleCardholder = (await stripeUtils.stripe.issuing.cardholders.list({ email: global.setupOneTransactionCardholder })).data[0]
+    sampleAuthorization = (await stripeUtils.stripe.issuing.authorizations.list({ cardholder: sampleCardholder.id, limit: 1 })).data[0]
+  })
 
   let constructEventStub, cardholdersUpdateStub
   beforeEach(() => {
