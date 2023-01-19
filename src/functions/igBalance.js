@@ -30,13 +30,19 @@ export const igBalance = async (req, res) => {
     return res.json({})
   }
   const responseOutput = await spendingControls.getSpendBalanceTransactions(cardholder)
-  // NOTE: for backwards compatability, we need to return it in this format
+  addDeprecationNote(responseOutput)
+  res.json(responseOutput)
+}
+
+// NOTE: for backwards compatability, we need to return it in this format
+const addDeprecationNote = (responseOutput) => {
+  responseOutput.deprecations = 'DEPRECATION NOTE: total_spent, remaining_amt, and authorizations are deprecated'
   responseOutput.total_spent = responseOutput.spend
   responseOutput.remaining_amt = responseOutput.balance
   responseOutput.authorizations = responseOutput.transactions
-  responseOutput.deprecations = 'DEPRECATION NOTE: total_spent, remaining_amt, and authorizations are deprecated'
-  res.json(responseOutput)
+  return responseOutput
 }
+
 
 const verifyParams = async (req) => {
   // NOTE: do NOT normalize email; that strips dots, or + from the email...
