@@ -1,16 +1,21 @@
 # Island Grown Credit Card
 
+## Overview
+
 This is the software to help manage the [San Juan County, WA](https://sanjuanco.com/) [Dept. of Health](https://sanjuanco.com/1777/Health-Community-Services) food assistance program.
 
-The county manages and assists with a number of food assistance programs, ranging from the feds to numerous local non-profits. They all have their own requirements and demands on both the consumer and merchant (paper coupons, special local vouchers, etc) that require training and significant time by the merchants and county health staff to manage. This program is designed to roll many of those programs into a single physical credit card, using [Stripe's Issue Card](https://stripe.com/issuing) program. Food assistance customers can use these cards at specific local merchants, and they require minimal to no training at the merchant level as they are just credit cards. Various grant requirements are met by partnering with the largest local merchants on food purchase history tied to the cards, which are gathered, aggregated, and used to meet various reporting requirements.
+The county manages and assists with a number of food assistance programs, ranging from the federal government to numerous local non-profits. They all have their own requirements and demands on both the consumer and merchant (paper coupons, special local vouchers, etc) that require training and significant time by the merchants and county health staff to manage.
+
+This program is designed to roll many of those programs into a single physical credit card, using [Stripe's Issue Card](https://stripe.com/issuing) program. Food assistance customers can use these cards at specific local merchants, and they require minimal to no training at the merchant level as they are just credit cards. Various grant requirements are met by partnering with the largest local merchants (co-ops and food hubs) on food purchase history tied to the cards, which are gathered, aggregated, and used to meet various reporting requirements.
 
 ### The customer flow, in general, is:
 
-* manually enter customer information into the Stripe Dashboard (or use their upload functionality) to create cardholders with a physical card. This is done by the county health dept. and partnering local non-profits such as the family resource center (a [webhook](./src/functions/whCardholderSetup.js) is setup to run some code to normalize the entered information and setup default spending limits, which is like a balance)
-* cards are shipped to the customer in a few business days
+* manually enter or upload customer information into the [Stripe Dashboard](https://dashboard.stripe.com/issuing/cardholders) to create cardholders and a physical card. This is done by the county health dept. and partnering local non-profits such as the family resource center
+** upon entry, a [webhook](./src/functions/whCardholderSetup.js) runs to normalize the entered information and setup default spending limits for that card
+* cards are shipped by Stripe to the customer in a few business days
 * the cards can be used at select local merchants, such as local food co-ops and farm stands (see an example of a local merchant whitelist [here](./config/app_configs.yml))
-* when a customer uses a card at a merchant, Stripe calls a [webhook](./src/functions/whAuthorization.js) which verifies if the merchant is whitelisted. Stripe also checks the spending controls to see if the customer has enough balance on their card.
-* customers can check their balance by using a webpage provided by county health which hits this [backend endpoint](./src/functions/igBalance.js)
+* when a customer uses their card at a merchant, Stripe calls a [webhook](./src/functions/whAuthorization.js) to verify if the merchant is allowed or not. Stripe also checks the spending controls to see if the customer has enough balance on their card.
+* customers can check their balance by using a webpage provided by county health which hits a [backend endpoint](./src/functions/igBalance.js), such as `GET https://cloud-function-hostname?email=example@gmail.com`
 * on a set schedule (currently nightly) a [script](https://github.com/skippy/island_grown/blob/main/src/functions/igUpdateCardholderSpendingRules.js) is run to check if customers whom are using their card are eligible for a refill.
 
 
@@ -26,7 +31,7 @@ The county manages and assists with a number of food assistance programs, rangin
 
 ### Stripe Setup
 
-* setup and enable Card Issuing
+* setup and enable [Card Issuing](https://stripe.com/issuing)
 * configure Card issuing ([notification preferences](https://dashboard.stripe.com/settings/issuing/balance-notifications) and [card design](https://dashboard.stripe.com/settings/issuing/card-design)).  You'll also want to [initiate a transfer](https://dashboard.stripe.com/balance/overview) to Stripe to make funds available for your issued cards.
 * setup [API keys](https://dashboard.stripe.com/apikeys)!  It is *highly* recommended that you create a separate key for each type of action that is scoped to just the functionality that you need.  You'll need the following keys:
    * [standard test key](https://dashboard.stripe.com/test/apikeys).
@@ -36,7 +41,7 @@ The county manages and assists with a number of food assistance programs, rangin
 
 ### Development & Testing
 
-* make your Stripe API test key available to run tests.  `cat /dev/stdin >> .env` and type `STRIPE_API_KEY=` and then your long api key, then exit.
+* make your Stripe API test key available to run tests. Store `STRIPE_API_KEY={your_long_stripe_key}` in `.env`.
 
 ```sh
 yarn install
@@ -50,7 +55,7 @@ This creates and uses test data hosted by [Stripe in their test environment](htt
 
 #### Hosting
 
-Setting up hosting is beyond the scope of this `README` but the code should be agnostic to any platform.  We use [GCP](https://cloud.google), specifically `cloud functions`, `Job Scheduler`, `IAM`, `cloud dns`, and `Secret Manager`.  Check out `./scripts/gcp_update.zsh` for ideas.
+Setting up hosting is beyond the scope of this `README` but the code should be agnostic to any platform.  We use [GCP](https://cloud.google), specifically `cloud functions`, `Job Scheduler`, `IAM`, `cloud dns`, and `Secret Manager`.  See [./scripts/gcp_update.zsh](./scripts/gcp_update.zsh).
 
 API Keys can be passed in via ENV, so plan to use a secret manager to securely inject them at runtime.
 
