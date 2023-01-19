@@ -1,4 +1,3 @@
-import { check, validationResult } from 'express-validator'
 import config from './config.js'
 import * as stripeUtils from './stripe-utils.js'
 import { logger } from './logger.js'

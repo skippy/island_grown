@@ -1,4 +1,3 @@
-import { check, validationResult } from 'express-validator'
 import config from './config.js'
 
 import Stripe from 'stripe'
