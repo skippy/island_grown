@@ -33,33 +33,21 @@ export const whAuthorization = async (req, res) => {
       const merchantNameRegEx = new RegExp(escapeRegex(merchantName), 'i');
 
       const vendors = config.get('approved_vendors')
-      const foundVendor = Object.keys(vendors).find(vn => merchantNameRegEx.test(vn) )
+      const foundVendor = Object.keys(vendors).find(vn => merchantNameRegEx.test(vn.toLowerCase()) )
       const vendorVerified = foundVendor ? vendors[foundVendor].toString() === merchantData.postal_code.toString() : false
       logger.debug(`found vendor? ${foundVendor || false} -- verified vendor? ${vendorVerified || false}`)
 
-      // if(vendorVerified){
-      //   logger.info(`auth approved? ${vendorVerified}: ${issuingAuth.id}`)
-      //   await stripeUtils.stripe.issuing.authorizations.approve(issuingAuth.id)
-      // }else{
-      //   logger.info(`auth declined: ${issuingAuth.id}`)
-      //   await stripeUtils.stripe.issuing.authorizations.decline(issuingAuth.id,
-      //     { metadata: {
-      //       reason: "not a verified vendor",
-      //       vendor_found: foundVendor || false,
-      //       mapped_postal_code: vendors[foundVendor] || false
-      //     }})
-      // }
       logger.info(`auth approved? ${vendorVerified}: ${issuingAuth.id}`)
       res.writeHead(200, {"Stripe-Version": stripeUtils.stripeVersion, "Content-Type": "application/json"});
       var body = JSON.stringify({
         "approved": vendorVerified,
         "metadata": {
                       vendor_found: foundVendor || false,
-                      mapped_postal_code: vendors[foundVendor] || false
+                      vendor_postal_code: vendors[foundVendor] || false,
+                      merchant_postal_code: merchantData.postal_code
                     }
 
       })
-
 
       return res.end(body)
       break;
