@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-// const yargs = require("yargs");
-// import yargs from 'yargs'
-
+/**
+ *
+*/
 import yargs from 'yargs/yargs';
 'use strict'
 

@@ -6,7 +6,7 @@ import bodyParser from 'body-parser'
 import { logger } from './logger.js'
 
 import { igBalance } from './functions/igBalance.js'
-import { igSetup } from './functions/igSetup.js'
+import { igUpdateCardholderSpendingRules } from './functions/igUpdateCardholderSpendingRules.js'
 import { whCardholderSetup } from './functions/whCardholderSetup.js'
 import { whAuthorization } from './functions/whAuthorization.js'
 
@@ -25,16 +25,16 @@ app.use(bodyParser.json({
 }))
 
 app.get('/igBalance', igBalance)
-app.get('/igSetup', igSetup)
+app.post('/igUpdateCardholderSpendingRules', igUpdateCardholderSpendingRules)
 app.post('/whCardholderSetup', express.raw({type: 'application/json'}), whCardholderSetup);
 app.post('/whAuthorization', express.raw({type: 'application/json'}), whAuthorization);
 
 // NOTE: google cloud functions needs app to be exported with the various end points specified
 // but the server.js and testing logic needs app just to be exported; so declaring it twice
-export { app as index, igBalance, igSetup, whCardholderSetup, whAuthorization }
+export { app as index, igBalance, igUpdateCardholderSpendingRules, whCardholderSetup, whAuthorization }
 export { app }
 export { config }
-// export { app as index, igBalance, igSetup, helloHttp }
+// export { app as index, igBalance, igUpdateCardholderSpendingRules, helloHttp }
 
 // export default app;
 // needed for testing with jest; not a fan!
