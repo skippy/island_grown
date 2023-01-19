@@ -31,11 +31,11 @@ describe('defaultMetadata', () => {
 
 
 describe('defaultSpendingControls', () => {
-  it('should return an all_time spending limit set to the base funding amt', () => {
+  it('should return the expected spending limit, set in configs, and set to the base funding amt', () => {
     const defaults = spendingControls.defaultSpendingControls()
     expect(defaults).to.eql({
       spending_limits: [{ amount: (config.get('base_funding_amt') * 100),
-                          interval: 'all_time'
+                          interval: config.get('spending_limit_interval')
                        }]
     })
   })
@@ -71,7 +71,7 @@ describe('recomputeSpendingLimits', async () => {
 
     const defaults = await spendingControls.recomputeSpendingLimits(sampleCardholder)
     expect(defaults.spending_controls).to.eql({
-      spending_limits: [ { amount: 22500, interval: 'all_time' } ]
+      spending_limits: [ { amount: 22500, interval: config.get('spending_limit_interval') } ]
     })
     expect(defaults.metadata.numRefills).to.eql(1)
     expect(defaults.metadata.refill_0_amt).to.eql(75)
@@ -85,7 +85,7 @@ describe('recomputeSpendingLimits', async () => {
 
     const defaults = await spendingControls.recomputeSpendingLimits(sampleCardholder)
     expect(defaults.spending_controls).to.eql({
-      spending_limits: [ { amount: 22500, interval: 'all_time' } ]
+      spending_limits: [ { amount: 22500, interval: config.get('spending_limit_interval') } ]
     })
     expect(defaults.metadata.numRefills).to.eql(1)
     expect(defaults.metadata.refill_0_amt).to.eql(75)
@@ -103,7 +103,7 @@ describe('recomputeSpendingLimits', async () => {
 
     const defaults = await spendingControls.recomputeSpendingLimits(sampleCardholder)
     expect(defaults.spending_controls).to.eql({
-      spending_limits: [ { amount: 22500, interval: 'all_time' } ]
+      spending_limits: [ { amount: 22500, interval: config.get('spending_limit_interval') } ]
     })
     expect(defaults.metadata.numRefills).to.eql(1)
     expect(defaults.metadata.refill_0_amt).to.eql(75)
@@ -115,7 +115,7 @@ describe('recomputeSpendingLimits', async () => {
     modifiedSpendBalance.spend = modifiedSpendBalance.spend + 50
     const defaults2 = await spendingControls.recomputeSpendingLimits(sampleCardholder)
     expect(defaults2.spending_controls).to.eql({
-      spending_limits: [ { amount: 27500, interval: 'all_time' } ]
+      spending_limits: [ { amount: 27500, interval: config.get('spending_limit_interval') } ]
     })
     expect(defaults2.metadata.numRefills).to.eql(2)
     expect(defaults2.metadata.refill_1_amt).to.eql(50)
@@ -127,6 +127,13 @@ describe('recomputeSpendingLimits', async () => {
 
 
 describe('getSpendBalanceTransactions', () => {
+  const sandbox = sinon.createSandbox();
+
+  afterEach(() => {
+    sandbox.restore();
+  })
+
+
   it('should return null if cardholder found', async () => {
     let response = await spendingControls.getSpendBalanceTransactions()
     expect(response).to.be.null;
@@ -196,6 +203,44 @@ describe('getSpendBalanceTransactions', () => {
     expect(response.balance).to.eql(chSpendingLimitAmt-30)
     expect(response.transactions.length).to.eql(1)
     expect(response.transactions[0].type).to.eql('capture')
+  })
+
+  it('should not pass a created filter if spending_limit_interval is set to all_time', async () => {
+    const transactionsListSpy = sandbox.spy(stripeUtils.stripe.issuing.transactions, "list")
+    const configGetSpy = sandbox.stub(config, 'get').returns('all_time')
+    const ch = await stripeUtils.retrieveCardholderByEmail(global.emptyCardholderEmail)
+
+    //stripe sets spending limits in cents, we want dollars
+    let response = await spendingControls.getSpendBalanceTransactions(ch)
+    expect(transactionsListSpy.calledOnce).to.be.true
+    expect(transactionsListSpy.getCall(0).args[0]).to.eql({ cardholder: ch.id } )
+  })
+
+  it('should pass a created filter set to the beginning of the year if spending_limit_interval is set to yearly', async () => {
+    const transactionsListSpy = sandbox.spy(stripeUtils.stripe.issuing.transactions, "list")
+    const configGetSpy = sandbox.stub(config, 'get').returns('yearly')
+    const ch = await stripeUtils.retrieveCardholderByEmail(global.emptyCardholderEmail)
+
+    //stripe sets spending limits in cents, we want dollars
+    let response = await spendingControls.getSpendBalanceTransactions(ch)
+    expect(transactionsListSpy.calledOnce).to.be.true
+    // console.log(cardholderListSpy.getCall(1).args)
+    const beginningOfYear = new Date(new Date().getFullYear(), 0, 1).valueOf()
+    expect(transactionsListSpy.getCall(0).args[0]).to.eql({ cardholder: ch.id, 'created[gte]': beginningOfYear } )
+  })
+
+  it('should pass a created filter set to the beginning of the month if spending_limit_interval is set to monthly', async () => {
+    const transactionsListSpy = sandbox.spy(stripeUtils.stripe.issuing.transactions, "list")
+    const configGetSpy = sandbox.stub(config, 'get').returns('monthly')
+    const ch = await stripeUtils.retrieveCardholderByEmail(global.emptyCardholderEmail)
+
+    //stripe sets spending limits in cents, we want dollars
+    let response = await spendingControls.getSpendBalanceTransactions(ch)
+    expect(transactionsListSpy.calledOnce).to.be.true
+    // console.log(cardholderListSpy.getCall(1).args)
+    const currDate = new Date();
+    const beginningOfMonth = new Date(currDate.getFullYear(), currDate.getMonth(), 1).valueOf()
+    expect(transactionsListSpy.getCall(0).args[0]).to.eql({ cardholder: ch.id, 'created[gte]': beginningOfMonth } )
   })
 
 

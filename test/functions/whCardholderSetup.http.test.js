@@ -89,7 +89,7 @@ const expectedCardholderUpdateObject = () => {
     sampleCardholder.id,
     {
       metadata: { numRefills: 0, base_funding_amt: config.get('base_funding_amt') },
-      spending_controls: { spending_limits: [ { amount: config.get('base_funding_amt') * 100, interval: 'all_time' } ] }
+      spending_controls: { spending_limits: [ { amount: config.get('base_funding_amt') * 100, interval: config.get('spending_limit_interval') } ] }
     }
   ]
 }

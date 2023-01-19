@@ -1,3 +1,4 @@
+spending_limit_interval: 'all_time'
 base_funding_amt: 150
 refill_trigger_percent: 0.75
 refill_amts:

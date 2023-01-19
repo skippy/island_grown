@@ -39,7 +39,7 @@ const defaultMetadata = (resetAll) => {
 const defaultSpendingControls = () => {
   return  {
     spending_limits: [{ amount: (config.get('base_funding_amt') * 100),
-                        interval: 'all_time'
+                        interval: config.get('spending_limit_interval')
                      }]
   }
 }
@@ -84,7 +84,7 @@ const recomputeSpendingLimits = async(cardholder) => {
     spending_controls: {
       spending_limits: [
         { amount: ((spendingInfo.spending_limit + refillAmt) * 100),
-          interval: 'all_time'
+          interval: config.get('spending_limit_interval')
         }
     ]}
   }
@@ -122,7 +122,9 @@ const getSpendBalanceTransactions = async (cardholder, includeTransactions=true)
     pending_amt: 0
   }
   if(includeTransactions) output.transactions = []
-  for await (const transaction of stripeUtils.stripe.issuing.transactions.list({ cardholder: cardholder.id })) {
+  const listArgs = constructListArgs(cardholder)
+
+  for await (const transaction of stripeUtils.stripe.issuing.transactions.list(listArgs)) {
     const tran = {
       amount: parseFloat((Math.abs(transaction.amount) / 100).toFixed(2)),
       type: transaction.type,
@@ -139,7 +141,8 @@ const getSpendBalanceTransactions = async (cardholder, includeTransactions=true)
     }
     if(includeTransactions) output.transactions.push(tran)
   }
-  for await (const pendingAuths of stripeUtils.stripe.issuing.authorizations.list({ cardholder: cardholder.id, status: 'pending'})) {
+
+  for await (const pendingAuths of stripeUtils.stripe.issuing.authorizations.list({ ...listArgs, status: 'pending' })) {
     if(output.pending_transactions === 0) logger.debug("pending authorizations")
     output.pending_transactions++
     output.pending_amt += pendingAuths.amount / 100
@@ -153,8 +156,31 @@ const getSpendBalanceTransactions = async (cardholder, includeTransactions=true)
 }
 
 const currentAllTimeSpendingLimit = (cardholder) => {
-  const sl = cardholder.spending_controls.spending_limits.find(l => l.interval === 'all_time')
+  const sl = cardholder.spending_controls.spending_limits.find(l => l.interval === config.get('spending_limit_interval'))
   return sl ? parseFloat((sl.amount / 100).toFixed(2)) : config.get('base_funding_amt')
+}
+
+const constructListArgs = (cardholder) => {
+  const listArgs = { cardholder: cardholder.id }
+  switch(config.get('spending_limit_interval')) {
+  case 'all_time':
+    // code block
+    break;
+  case 'yearly':
+    // get Jan 1st of current year, and return the unix timestamp
+    listArgs['created[gte]'] = new Date(new Date().getFullYear(), 0, 1).valueOf()
+    break;
+  case 'monthly':
+    // get the 1st of current month, and return the unix timestamp
+    const currDate = new Date();
+    var firstDay = new Date(currDate.getFullYear(), currDate.getMonth(), 1);
+    listArgs['created[gte]'] = firstDay.valueOf()
+    break;
+  default:
+    throw new Error("spending_limit_interval value '${const.get('spending_limit_interval')}' is not allowed")
+    // code block
+  }
+  return listArgs
 }
 
 // using this model to help with stubbing of an ESM module

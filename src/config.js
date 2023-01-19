@@ -48,6 +48,10 @@ const config = convict({
     format: 'int',
     default: null
   },
+  spending_limit_interval: {
+    format: ['all_time', 'yearly', 'monthly'],
+    default: null
+  },
   refill_trigger_percent: {
     format: 'Number',
     default: null
