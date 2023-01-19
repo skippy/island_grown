@@ -2,16 +2,15 @@ import config from './config.js'
 import * as stripeUtils from './stripe-utils.js'
 import { logger } from './logger.js'
 
-
 const defaultMetadata = (resetAll) => {
-  //stripe doesn't allow a full reset of metadata;  you need to
-  //define the parameter that should be removed with a null;
+  // stripe doesn't allow a full reset of metadata;  you need to
+  // define the parameter that should be removed with a null;
   // you can't set metadata: {} or just the values you want
   const defaults = {
     base_funding_amt: config.get('base_funding_amt'),
     numRefills: 0
   }
-  if(!resetAll) return defaults;
+  if (!resetAll) return defaults
 
   const resetDefaults = {
     refill_0_amt: null,
@@ -32,66 +31,67 @@ const defaultMetadata = (resetAll) => {
   return {
     ...defaults,
     ...resetDefaults
-    }
-  }
-
-const defaultSpendingControls = () => {
-  return  {
-    spending_limits: [{ amount: (config.get('base_funding_amt') * 100),
-                        interval: config.get('spending_limit_interval')
-                     }]
   }
 }
 
+const defaultSpendingControls = () => {
+  return {
+    spending_limits: [{
+      amount: (config.get('base_funding_amt') * 100),
+      interval: config.get('spending_limit_interval')
+    }]
+  }
+}
 
-const recomputeSpendingLimits = async(cardholder) => {
+const recomputeSpendingLimits = async (cardholder) => {
   // ASSUME cardholder is properly setup.  If not, this logic will fail.
   // rather than add logic to try to fix it, let it fail so we can figure out
   // why the object was not properly setup in the first place
   // update spending limits and refills if needed
   // calling on itself but in the declared namespace helps stub ESM modules
-  const spendingInfo = await spendingControls.getSpendBalanceTransactions(cardholder,false)
+  const spendingInfo = await spendingControls.getSpendBalanceTransactions(cardholder, false)
 
-//   if(!cardholder.metadata.numRefills){
-//     //reset metadata!  this shouldn't happen, but lets check just in case
-//     cardholder.metadata = spendingControls.defaultMetadata()
-//     updateData.metadata = cardholder.metadata
-//   }
-//   if(!cardholder.spending_controls || !cardholder.spending_controls.spending_limits || cardholder.spending_controls.spending_limits.length ===0){
-// console.log(cardholder.spending_controls)
-//     cardholder.spending_controls = spendingControls.defaultSpendingControls()
-//     updateData.spending_controls = cardholder.spending_controls
-//   }
-  if(spendingInfo.spend < spendingInfo.spending_limit * config.get('refill_trigger_percent')){
-    logger.debug("spend is fine; no refill needed")
+  //   if(!cardholder.metadata.numRefills){
+  //     //reset metadata!  this shouldn't happen, but lets check just in case
+  //     cardholder.metadata = spendingControls.defaultMetadata()
+  //     updateData.metadata = cardholder.metadata
+  //   }
+  //   if(!cardholder.spending_controls || !cardholder.spending_controls.spending_limits || cardholder.spending_controls.spending_limits.length ===0){
+  // console.log(cardholder.spending_controls)
+  //     cardholder.spending_controls = spendingControls.defaultSpendingControls()
+  //     updateData.spending_controls = cardholder.spending_controls
+  //   }
+  if (spendingInfo.spend < spendingInfo.spending_limit * config.get('refill_trigger_percent')) {
+    logger.debug('spend is fine; no refill needed')
     return {}
   }
 
   const refillIndex = cardholder.metadata.numRefills
   const refillAmts = config.get('refill_amts')
   const refillAmt = refillAmts[refillIndex]
-  if(!refillAmt){
+  if (!refillAmt) {
     logger.debug(`approaching spending limit BUT they are maxed out on refills: ${refillIndex}`)
     return {}
   }
 
-  logger.debug("spend is close to spending limit and refill is available")
+  logger.debug('spend is close to spending limit and refill is available')
   const updateData = {
     metadata: {
       numRefills: parseInt(cardholder.metadata.numRefills) + 1
     },
     spending_controls: {
       spending_limits: [
-        { amount: ((spendingInfo.spending_limit + refillAmt) * 100),
+        {
+          amount: ((spendingInfo.spending_limit + refillAmt) * 100),
           interval: config.get('spending_limit_interval')
         }
-    ]}
+      ]
+    }
   }
   updateData.metadata[`refill_${refillIndex}_amt`] = refillAmt
   updateData.metadata[`refill_${refillIndex}_date`] = new Date().toLocaleDateString()
-  return updateData;
+  return updateData
 }
-
 
 // const resetMetadata = async (cardholder) => {
 //   await stripeUtils.stripe.issuing.cardholders.update(
@@ -101,7 +101,6 @@ const recomputeSpendingLimits = async(cardholder) => {
 //   )
 // }
 
-
 // const resetSpendingControls = async(cardholder) => {
 //   await stripeUtils.stripe.issuing.cardholders.update(
 //     cardholder.id,
@@ -109,10 +108,8 @@ const recomputeSpendingLimits = async(cardholder) => {
 //   )
 // }
 
-
-
-const getSpendBalanceTransactions = async (cardholder, includeTransactions=true) => {
-  if(!cardholder) return null
+const getSpendBalanceTransactions = async (cardholder, includeTransactions = true) => {
+  if (!cardholder) return null
   const output = {
     spending_limit: currentAllTimeSpendingLimit(cardholder),
     spend: 0.0,
@@ -120,7 +117,7 @@ const getSpendBalanceTransactions = async (cardholder, includeTransactions=true)
     pending_transactions: 0,
     pending_amt: 0
   }
-  if(includeTransactions) output.transactions = []
+  if (includeTransactions) output.transactions = []
   const listArgs = constructListArgs(cardholder)
 
   for await (const transaction of stripeUtils.stripe.issuing.transactions.list(listArgs)) {
@@ -133,23 +130,23 @@ const getSpendBalanceTransactions = async (cardholder, includeTransactions=true)
       ['name', 'city', 'state', 'postal_code']
         .map(key => [key, transaction.merchant_data[key]])
     )
-    if(transaction.type === 'capture'){
+    if (transaction.type === 'capture') {
       output.spend += tran.amount
-    }else{
+    } else {
       output.spend -= tran.amount
     }
-    if(includeTransactions) output.transactions.push(tran)
+    if (includeTransactions) output.transactions.push(tran)
   }
 
   for await (const pendingAuths of stripeUtils.stripe.issuing.authorizations.list({ ...listArgs, status: 'pending' })) {
-    if(output.pending_transactions === 0) logger.debug("pending authorizations")
+    if (output.pending_transactions === 0) logger.debug('pending authorizations')
     output.pending_transactions++
     output.pending_amt += pendingAuths.amount / 100
   }
-  output.spend  += output.pending_amt
+  output.spend += output.pending_amt
 
   output.pending_amt = parseFloat(output.pending_amt.toFixed(2))
-  output.spend   = parseFloat(output.spend.toFixed(2))
+  output.spend = parseFloat(output.spend.toFixed(2))
   output.balance = parseFloat((output.spending_limit - output.spend).toFixed(2))
   return output
 }
@@ -161,22 +158,22 @@ const currentAllTimeSpendingLimit = (cardholder) => {
 
 const constructListArgs = (cardholder) => {
   const listArgs = { cardholder: cardholder.id }
-  switch(config.get('spending_limit_interval')) {
-  case 'all_time':
+  switch (config.get('spending_limit_interval')) {
+    case 'all_time':
     // code block
-    break;
-  case 'yearly':
+      break
+    case 'yearly':
     // get Jan 1st of current year, and return the unix timestamp
-    listArgs['created[gte]'] = new Date(new Date().getFullYear(), 0, 1).valueOf()
-    break;
-  case 'monthly':
+      listArgs['created[gte]'] = new Date(new Date().getFullYear(), 0, 1).valueOf()
+      break
+    case 'monthly':
     // get the 1st of current month, and return the unix timestamp
-    const currDate = new Date();
-    var firstDay = new Date(currDate.getFullYear(), currDate.getMonth(), 1);
-    listArgs['created[gte]'] = firstDay.valueOf()
-    break;
-  default:
-    throw new Error("spending_limit_interval value '${const.get('spending_limit_interval')}' is not allowed")
+      const currDate = new Date()
+      var firstDay = new Date(currDate.getFullYear(), currDate.getMonth(), 1)
+      listArgs['created[gte]'] = firstDay.valueOf()
+      break
+    default:
+      throw new Error("spending_limit_interval value '${const.get('spending_limit_interval')}' is not allowed")
     // code block
   }
   return listArgs
@@ -184,8 +181,8 @@ const constructListArgs = (cardholder) => {
 
 // using this model to help with stubbing of an ESM module
 export const spendingControls = {
-    defaultMetadata,
-    defaultSpendingControls,
-    recomputeSpendingLimits,
-    getSpendBalanceTransactions,
-};
+  defaultMetadata,
+  defaultSpendingControls,
+  recomputeSpendingLimits,
+  getSpendBalanceTransactions
+}

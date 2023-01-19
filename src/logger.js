@@ -17,13 +17,13 @@ export const logger = winston.createLogger({
   level: config.get('log_level'),
   transports: [
     new winston.transports.Console()
-  ],
-});
+  ]
+})
 
 if (config.get('env') !== 'production') {
   logger.add(new winston.transports.Console({
-    format: winston.format.simple(),
-  }));
+    format: winston.format.simple()
+  }))
 }
 
 // export const logger = winston

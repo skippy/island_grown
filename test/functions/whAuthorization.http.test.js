@@ -10,7 +10,7 @@ chai.use(chaiHttp)
 const should = chai.should()
 
 describe('/POST whAuthorization', () => {
-  const sandbox = sinon.createSandbox();
+  const sandbox = sinon.createSandbox()
   let sampleCardholder, sampleAuthorization
   before(async () => {
     sampleCardholder = (await stripeUtils.stripe.issuing.cardholders.list({ email: global.setupOneTransactionCardholder })).data[0]
@@ -19,18 +19,17 @@ describe('/POST whAuthorization', () => {
 
   let constructEventStub, cardholdersUpdateStub
   beforeEach(() => {
-    constructEventStub = sandbox.stub(stripeUtils.stripe.webhooks, "constructEvent");
+    constructEventStub = sandbox.stub(stripeUtils.stripe.webhooks, 'constructEvent')
     // cardholdersUpdateStub = sandbox.stub(stripeUtils.stripe.issuing.cardholders, "update").returns(true);
     constructEventStub.returns({
       type: 'issuing_authorization.request',
       data: {
         object: sampleAuthorization
-        }
+      }
     })
-
   })
   afterEach(() => {
-    sandbox.restore();
+    sandbox.restore()
   })
 
   it('should check that the event security method is called', async () => {
@@ -40,7 +39,7 @@ describe('/POST whAuthorization', () => {
     expect(constructEventStub.calledOnce).to.be.true
   })
 
-  it('should return an unapproved code, with a reason, if the vendor name is not mached', async() => {
+  it('should return an unapproved code, with a reason, if the vendor name is not mached', async () => {
     sampleAuthorization.merchant_data.name = 'JUnk Name'
     const res = await chai.request(server)
       .post('/whAuthorization')
@@ -50,7 +49,7 @@ describe('/POST whAuthorization', () => {
     expect(res.body.metadata.merchant_postal_code).to.not.be.empty
   })
 
-  it('should return an unapproved code, with a reason, if the vendor name is found BUT the matching postal code is not', async() => {
+  it('should return an unapproved code, with a reason, if the vendor name is found BUT the matching postal code is not', async () => {
     const vendors = config.get('approved_vendors')
     const validVendorName = Object.keys(vendors)[0]
     const validVendorPostalCode = vendors[validVendorName]
@@ -66,7 +65,7 @@ describe('/POST whAuthorization', () => {
     expect(res.body.metadata.merchant_postal_code).to.be.eql(invalidPostalCode)
   })
 
-  it('should return an approved code if the vendor name and postal code match the merchant', async() => {
+  it('should return an approved code if the vendor name and postal code match the merchant', async () => {
     const vendors = config.get('approved_vendors')
     const validVendorName = Object.keys(vendors)[0]
     const validVendorPostalCode = vendors[validVendorName]
@@ -81,7 +80,7 @@ describe('/POST whAuthorization', () => {
     expect(res.body.metadata.merchant_postal_code).to.be.eql(validVendorPostalCode)
   })
 
-  it('should return an approved code if the vendor name matches but is a differnt case', async() => {
+  it('should return an approved code if the vendor name matches but is a differnt case', async () => {
     const vendors = config.get('approved_vendors')
     const validVendorName = Object.keys(vendors)[0]
     const validVendorPostalCode = vendors[validVendorName]
@@ -92,7 +91,4 @@ describe('/POST whAuthorization', () => {
     res.should.have.status(200)
     expect(res.body.approved).to.be.true
   })
-
 })
-
-

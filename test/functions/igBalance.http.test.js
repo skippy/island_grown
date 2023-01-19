@@ -35,7 +35,7 @@ describe('/GET igBalance', () => {
     responseObj.balance.should.eql(150)
     responseObj.spend.should.eql(0)
     responseObj.transactions.should.eql([])
-    //NOTE: keep deprecated
+    // NOTE: keep deprecated
     responseObj.total_spent.should.eql(0)
     responseObj.remaining_amt.should.eql(150)
     responseObj.authorizations.should.eql([])

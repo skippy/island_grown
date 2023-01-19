@@ -10,8 +10,6 @@ import { igUpdateCardholderSpendingRules } from './functions/igUpdateCardholderS
 import { whCardholderSetup } from './functions/whCardholderSetup.js'
 import { whAuthorization } from './functions/whAuthorization.js'
 
-
-
 logger.level = config.get('log_level')
 
 const app = express()
@@ -26,8 +24,8 @@ app.use(bodyParser.json({
 
 app.get('/igBalance', igBalance)
 app.post('/igUpdateCardholderSpendingRules', igUpdateCardholderSpendingRules)
-app.post('/whCardholderSetup', express.raw({type: 'application/json'}), whCardholderSetup);
-app.post('/whAuthorization', express.raw({type: 'application/json'}), whAuthorization);
+app.post('/whCardholderSetup', express.raw({ type: 'application/json' }), whCardholderSetup)
+app.post('/whAuthorization', express.raw({ type: 'application/json' }), whAuthorization)
 
 // NOTE: google cloud functions needs app to be exported with the various end points specified
 // but the server.js and testing logic needs app just to be exported; so declaring it twice

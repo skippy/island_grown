@@ -12,11 +12,11 @@ console.log('** Stripe Webhooks')
 // }
 
 for await (const we of stripeUtils.stripe.webhookEndpoints.list()) {
-console.log(we)
-	console.log(`  ${we.id}`)
-	console.log(`     url: ${we.url}`)
-	console.log(`     desc: ${we.description}`)
-	console.log(`     events: ${we.enabled_events.join(', ')}`)
+  console.log(we)
+  console.log(`  ${we.id}`)
+  console.log(`     url: ${we.url}`)
+  console.log(`     desc: ${we.description}`)
+  console.log(`     events: ${we.enabled_events.join(', ')}`)
 }
 
 // console.log(webhookEndpoints)

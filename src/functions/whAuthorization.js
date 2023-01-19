@@ -10,56 +10,54 @@ import { logger } from '../logger.js'
  * @return {JSON} balance object
  */
 export const whAuthorization = async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  let event;
+  const sig = req.headers['stripe-signature']
+  let event
 
   try {
-    event = stripeUtils.stripe.webhooks.constructEvent(req.rawBody, sig, config.get('stripe_auth_webhook_secret'));
+    event = stripeUtils.stripe.webhooks.constructEvent(req.rawBody, sig, config.get('stripe_auth_webhook_secret'))
   } catch (err) {
-    res.status(400).send(`Webhook Error: ${err.message}`);
-    return;
+    res.status(400).send(`Webhook Error: ${err.message}`)
+    return
   }
 
   // Handle the event
   switch (event.type) {
     case 'issuing_authorization.request':
     // case 'issuing_authorization.created':
-      const issuingAuth = event.data.object;
+      const issuingAuth = event.data.object
       const merchantData = issuingAuth.merchant_data
       logger.debug('Merchant Data')
       logger.debug(merchantData)
 
       const merchantName = merchantData.name
-      const merchantNameRegEx = new RegExp(escapeRegex(merchantName), 'i');
+      const merchantNameRegEx = new RegExp(escapeRegex(merchantName), 'i')
 
       const vendors = config.get('approved_vendors')
-      const foundVendor = Object.keys(vendors).find(vn => merchantNameRegEx.test(vn.toLowerCase()) )
+      const foundVendor = Object.keys(vendors).find(vn => merchantNameRegEx.test(vn.toLowerCase()))
       const vendorVerified = foundVendor ? vendors[foundVendor].toString() === merchantData.postal_code.toString() : false
       logger.debug(`found vendor? ${foundVendor || false} -- verified vendor? ${vendorVerified || false}`)
 
       logger.info(`auth approved? ${vendorVerified}: ${issuingAuth.id}`)
-      res.writeHead(200, {"Stripe-Version": stripeUtils.stripeVersion, "Content-Type": "application/json"});
+      res.writeHead(200, { 'Stripe-Version': stripeUtils.stripeVersion, 'Content-Type': 'application/json' })
       var body = JSON.stringify({
-        "approved": vendorVerified,
-        "metadata": {
-                      vendor_found: foundVendor || false,
-                      vendor_postal_code: vendors[foundVendor] || false,
-                      merchant_postal_code: merchantData.postal_code
-                    }
+        approved: vendorVerified,
+        metadata: {
+          vendor_found: foundVendor || false,
+          vendor_postal_code: vendors[foundVendor] || false,
+          merchant_postal_code: merchantData.postal_code
+        }
 
       })
 
       return res.end(body)
-      break;
+      break
     default:
-      logger.warn(`Unhandled event type ${event.type}`);
+      logger.warn(`Unhandled event type ${event.type}`)
   }
   // Return a 200 response to acknowledge receipt of the event
-  res.send();
+  res.send()
 }
-
 
 const escapeRegex = (string) => {
-  return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+  return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&')
 }
-

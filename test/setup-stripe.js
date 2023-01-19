@@ -4,18 +4,18 @@ import * as stripeUtils from '../src/stripe-utils.js'
 import Stripe from 'stripe'
 const stripeAPIKey = config.get('stripe_api_key')
 
-if(!/^sk_test_/i.test(stripeAPIKey)){
-	console.log('***** ERROR')
-	if(stripeAPIKey){
-		console.log(`  stripe API key is NOT a test key: ${stripeAPIKey.substring(0, 6)}...`)
-	}else{
-		console.log('  stripe API key is NOT set.  set ENV STRIPE_API_KEY')
-	}
-	console.log('  exiting')
-	process.exit(1);
+if (!/^sk_test_/i.test(stripeAPIKey)) {
+  console.log('***** ERROR')
+  if (stripeAPIKey) {
+    console.log(`  stripe API key is NOT a test key: ${stripeAPIKey.substring(0, 6)}...`)
+  } else {
+    console.log('  stripe API key is NOT set.  set ENV STRIPE_API_KEY')
+  }
+  console.log('  exiting')
+  process.exit(1)
 }
-//NOTE: do NOT use the stripe defined in stripeUtils because we want to make sure the
-//right API key is being used
+// NOTE: do NOT use the stripe defined in stripeUtils because we want to make sure the
+// right API key is being used
 global.stripe = new Stripe(stripeAPIKey, { apiVersion: stripeUtils.apiVersion })
 
 global.transactionCardholderEmail = 'jenny.rubin_has_transactions@example.com'
@@ -30,10 +30,10 @@ before(async () => {
   await setupOneTransactionCardholder()
   await setupOneTransactionWithRefundCardholder()
   await setupOneTransactionAndPendingCardholder()
-  if(createdStripeObjects){
+  if (createdStripeObjects) {
   	console.log('**** Waiting for stripe objects to become available')
-  	//FIXME: can we keep looping until a query returns?
-  	await delay(5000);
+  	// FIXME: can we keep looping until a query returns?
+  	await delay(5000)
   }
 })
 
@@ -41,7 +41,7 @@ const setupNoTransactionsCardholder = async () => {
   let cardholder = (await stripe.issuing.cardholders.list({ email: global.emptyCardholderEmail })).data[0]
   if (cardholder) return
   console.log('** creating initial stripe cardholder with no transactions')
-	createdStripeObjects = true
+  createdStripeObjects = true
 
   cardholder = await stripe.issuing.cardholders.create({
 	  name: 'Jenny Rosen Empty',
@@ -74,7 +74,7 @@ const setupOneTransactionWithRefundCardholder = async () => {
   let cardholder = (await stripe.issuing.cardholders.list({ email: global.transactionWithRefundCardholderEmail })).data[0]
   if (cardholder) return
   console.log('** creating initial stripe cardholder with 1 transaction and a refund')
-	createdStripeObjects = true
+  createdStripeObjects = true
 
   await stripe.topups.create({
 	  destination_balance: 'issuing',
@@ -141,20 +141,19 @@ const setupOneTransactionWithRefundCardholder = async () => {
 	  confirm: true
   })
   await stripe.paymentIntents.capture(paymentIntent.id)
-	const refund = await stripe.refunds.create({
+  const refund = await stripe.refunds.create({
   	payment_intent: paymentIntent.id,
-	  amount: 2000,
-	});
+	  amount: 2000
+  })
   console.log('**   Finished')
-
 }
 
 const setupOneTransactionCardholder = async () => {
-	// one transaction AND one pending
+  // one transaction AND one pending
   let cardholder = (await stripe.issuing.cardholders.list({ email: global.transactionCardholderEmail })).data[0]
   if (cardholder) return
   console.log('** creating initial stripe cardholder with 1 transaction')
-	createdStripeObjects = true
+  createdStripeObjects = true
 
   await stripe.topups.create({
 	  destination_balance: 'issuing',
@@ -223,14 +222,12 @@ const setupOneTransactionCardholder = async () => {
   console.log('**   Finished')
 }
 
-
-
 const setupOneTransactionAndPendingCardholder = async () => {
-	// one transaction AND one pending
+  // one transaction AND one pending
   let cardholder = (await stripe.issuing.cardholders.list({ email: global.transactionPendingCardholderEmail })).data[0]
   if (cardholder) return
   console.log('** creating initial stripe cardholder with 1 transaction and 1 pending')
-	createdStripeObjects = true
+  createdStripeObjects = true
 
   await stripe.topups.create({
 	  destination_balance: 'issuing',
@@ -314,7 +311,6 @@ const setupOneTransactionAndPendingCardholder = async () => {
   console.log('**   Finished')
 }
 
-
-function delay(time) {
-  return new Promise(resolve => setTimeout(resolve, time));
+function delay (time) {
+  return new Promise(resolve => setTimeout(resolve, time))
 }
