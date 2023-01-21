@@ -63,19 +63,18 @@ sms_help_msg: >
     reply B or BALANCE to see balance
     reply H or HELP to see this message again.
 
-
   If your transaction is declined, you'll receive a message as to why.
 
   reply STOP to unsubscribe
 sms_welcome_msg: >
   Welcome to your Island Grown Card!
 
-  If your transaction is declined, you'll receive a message as to why.
-
   You can:
     - reply B or BALANCE to see your remaining balance
     - reply H or HELP to see this message again.
     - reply STOP to unsubscribe
+
+  If your transaction is declined, you'll receive a message as to why.
 
   Thank you and enjoy your Island Grown Card!
 sms_stop_msg: >
