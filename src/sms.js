@@ -15,8 +15,8 @@ let _twilioClient
 // lazy load!!!  Not all serverless endpoints want or need sms logic so lets not require it
 const _sms_enabled = process.env.TWILIO_ACCOUNT_SID
 
-logger.info(`SMS Enabled via Twilio >> ${_sms_enabled}`)
 if (_sms_enabled) {
+  logger.info(`SMS Enabled using Twilio`)
   _twilioClient = new Twilio()
 } else {
   logger.debug(`Twilio needs the following parameters set
@@ -48,7 +48,7 @@ const sendWelcomeMsg = async (cardholder, override = false) => {
   if (!sms.isEnabled(cardholder, override)) return false
   if (cardholder.metadata.sms_welcome_sent) return false
 
-  const response = await sendTwilioMsg(welcomeMsg(), cardholder.phone_number)
+  const response = await sms._sendTwilioMsg(cardholder.phone_number, welcomeMsg())
   await stripeUtils.stripe.issuing.cardholders.update(
     cardholder.id,
     { metadata: { sms_welcome_sent: 1 } }
@@ -94,7 +94,7 @@ const sendDeclinedMsg = async (authorization, override = false) => {
   if (!sms.isEnabled(cardholder, override)) return false
 
   const msg = await sms.declinedMsg(authorization)
-  return await sendTwilioMsg(msg, cardholder.phone_number)
+  return await sms._sendTwilioMsg(cardholder.phone_number, msg)
 }
 
 const currBalanceMsg = async (cardholder) => {
@@ -162,7 +162,7 @@ const persistDisabled = async (cardholder) => {
 }
 
 const isEnabled = (cardholder, override) => {
-  if (!_sms_enabled) return false
+  // if (!_sms_enabled) return false
   const md = cardholder.md
   // Stripe stores key/value pairs in metadata as strings
   if (cardholder.phone_number && cardholder.metadata.sms_enabled === 'true') return true
@@ -187,7 +187,7 @@ const isEnabled = (cardholder, override) => {
 //   }
 // }
 
-const sendTwilioMsg = async (body, to_phone_number) => {
+const _sendTwilioMsg = async (to_phone_number, body) => {
   const response = await _twilioClient.messages
     .create({
       body,
@@ -205,7 +205,8 @@ const sendTwilioMsg = async (body, to_phone_number) => {
 // using this model to help with stubbing of an ESM module
 export const sms = {
   isEnabled,
-  _twilioClient,
+  _sendTwilioMsg,
+  // _twilioClient,
   welcomeMsg,
   helpMsg,
   sendWelcomeMsg,

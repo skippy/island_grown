@@ -14,7 +14,7 @@ describe('sms utils', async () => {
   let twilioMsgsStub
 
   beforeEach(() => {
-	    twilioMsgsStub = sandbox.stub(sms._twilioClient.messages, 'create').returns({})
+	  twilioMsgsStub = sandbox.stub(sms, '_sendTwilioMsg').returns({})
   })
 
   afterEach(() => {
@@ -45,11 +45,9 @@ describe('sms utils', async () => {
       sandbox.stub(sms, 'isEnabled').returns(true)
       await sms.sendWelcomeMsg(sampleCardholder)
 	    expect(twilioMsgsStub.calledOnce).to.be.true
-	    expect(twilioMsgsStub.getCall(0).args.length).to.be.eql(1)
-	    expect(Object.keys(twilioMsgsStub.getCall(0).args[0]).sort()).to.be.eql(['body', 'from', 'to'])
-	    expect(twilioMsgsStub.getCall(0).args[0].body).to.not.be.empty
-	    expect(twilioMsgsStub.getCall(0).args[0].to).to.eql(sampleCardholder.phone_number)
-	    expect(twilioMsgsStub.getCall(0).args[0].from).to.eql(config.get('twilio_phone_number'))
+	    expect(twilioMsgsStub.getCall(0).args.length).to.be.eql(2)
+	    expect(twilioMsgsStub.getCall(0).args[0]).to.eql(sampleCardholder.phone_number)
+	    expect(twilioMsgsStub.getCall(0).args[1]).to.eql(sms.welcomeMsg())
     })
 
     it('does not send if has sent before', async () => {
@@ -154,11 +152,9 @@ describe('sms utils', async () => {
       sandbox.stub(sms, 'isEnabled').returns(true)
       await sms.sendDeclinedMsg(clonedAut)
 	    expect(twilioMsgsStub.calledOnce).to.be.true
-	    expect(twilioMsgsStub.getCall(0).args.length).to.be.eql(1)
-	    expect(Object.keys(twilioMsgsStub.getCall(0).args[0]).sort()).to.be.eql(['body', 'from', 'to'])
-	    expect(twilioMsgsStub.getCall(0).args[0].body).to.not.be.empty
-	    expect(twilioMsgsStub.getCall(0).args[0].to).to.eql(clonedAut.card.cardholder.phone_number)
-	    expect(twilioMsgsStub.getCall(0).args[0].from).to.eql(config.get('twilio_phone_number'))
+	    expect(twilioMsgsStub.getCall(0).args.length).to.be.eql(2)
+	    expect(twilioMsgsStub.getCall(0).args[0]).to.eql(clonedAut.card.cardholder.phone_number)
+	    expect(twilioMsgsStub.getCall(0).args[1]).to.not.be.empty
     })
   })
 
