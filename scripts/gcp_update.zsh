@@ -22,7 +22,7 @@ eval "gcloud functions deploy ig-balance ${default_function_opts} \
   --entry-point=igBalance \
   --allow-unauthenticated \
   --min-instances 1 \
-  --max-instances 5 \
+  --max-instances 3 \
   --timeout 10 \
   --ingress-settings=all \
   --set-secrets 'STRIPE_API_KEY=${stripe_api_key_read_name}:latest'" &
@@ -62,7 +62,7 @@ eval "gcloud functions deploy wh-authorization ${default_function_opts} \
   --allow-unauthenticated \
   --min-instances 1 \
   --max-instances 4 \
-  --timeout 10 \
+  --timeout 3 \
   --ingress-settings=all \
   --set-secrets 'STRIPE_API_KEY=${stripe_api_key_write_name}:latest' \
   --set-secrets 'STRIPE_AUTH_WEBHOOK_SECRET=${stripe_api_key_auth_webhook_name}:latest' \
