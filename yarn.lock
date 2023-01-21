@@ -1763,7 +1763,7 @@ __metadata:
     js-yaml: ^4.1.0
     mocha: ^10.2.0
     sinon: ^15.0.1
-    stripe: ^11.6.0
+    stripe: ^11.7.0
     twilio: ^3.84.1
     winston: ^3.8.2
     yargs: ^17.6.2
@@ -3005,13 +3005,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stripe@npm:^11.6.0":
-  version: 11.6.0
-  resolution: "stripe@npm:11.6.0"
+"stripe@npm:^11.7.0":
+  version: 11.7.0
+  resolution: "stripe@npm:11.7.0"
   dependencies:
     "@types/node": ">=8.1.0"
     qs: ^6.11.0
-  checksum: f959f2d4fbeacbcb4e11350012ffef0ae4708cd9bbe3800cdc747c5f1dcb688fde0733df722a624fceb35d0b486cf32d8e86097513f028a19c9d18a4e54ec75b
+  checksum: f7ee3efb8d9cdb48355872f4f33aadccd48a35b43dda5e894b6db65e3f13b5fbd6f838ff5587c2e51592877a8f400d83c0d39f4dba650d143003dfb0373112b8
   languageName: node
   linkType: hard
 
