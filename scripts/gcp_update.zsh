@@ -25,7 +25,7 @@ eval "gcloud functions deploy ig-balance ${default_function_opts} \
   --max-instances 5 \
   --timeout 10 \
   --ingress-settings=all \
-  --set-secrets 'STRIPE_API_KEY=${stripe_api_key_read_name}:latest'"
+  --set-secrets 'STRIPE_API_KEY=${stripe_api_key_read_name}:latest'" &
 
 echo '---- Setting up wh-twilio endpoint'
 eval "gcloud functions deploy wh-twilio ${default_function_opts} \
@@ -38,7 +38,7 @@ eval "gcloud functions deploy wh-twilio ${default_function_opts} \
   --set-secrets 'STRIPE_API_KEY=STRIPE_ISSUING_WRITE:latest' \
   --set-secrets 'TWILIO_PHONE_NUMBER=TWILIO_PHONE_NUMBER:latest' \
   --set-secrets 'TWILIO_ACCOUNT_SID=TWILIO_ACCOUNT_SID:latest' \
-  --set-secrets 'TWILIO_AUTH_TOKEN=TWILIO_AUTH_TOKEN:latest'"
+  --set-secrets 'TWILIO_AUTH_TOKEN=TWILIO_AUTH_TOKEN:latest'" &
 
 
 echo '---- Setting up wh-cardholder-setup endpoint'
@@ -53,7 +53,7 @@ eval "gcloud functions deploy wh-cardholder-setup ${default_function_opts} \
   --set-secrets 'STRIPE_AUTH_WEBHOOK_SECRET=${stripe_api_key_cardholder_setup_name}:latest' \
   --set-secrets 'TWILIO_PHONE_NUMBER=TWILIO_PHONE_NUMBER:latest' \
   --set-secrets 'TWILIO_ACCOUNT_SID=TWILIO_ACCOUNT_SID:latest' \
-  --set-secrets 'TWILIO_AUTH_TOKEN=TWILIO_AUTH_TOKEN:latest'"
+  --set-secrets 'TWILIO_AUTH_TOKEN=TWILIO_AUTH_TOKEN:latest'" &
 
 
 echo '---- Setting up wh-authorization endpoint'
@@ -68,7 +68,7 @@ eval "gcloud functions deploy wh-authorization ${default_function_opts} \
   --set-secrets 'STRIPE_AUTH_WEBHOOK_SECRET=${stripe_api_key_auth_webhook_name}:latest' \
   --set-secrets 'TWILIO_PHONE_NUMBER=TWILIO_PHONE_NUMBER:latest' \
   --set-secrets 'TWILIO_ACCOUNT_SID=TWILIO_ACCOUNT_SID:latest' \
-  --set-secrets 'TWILIO_AUTH_TOKEN=TWILIO_AUTH_TOKEN:latest'"
+  --set-secrets 'TWILIO_AUTH_TOKEN=TWILIO_AUTH_TOKEN:latest'" &
 
 
 echo '---- Setting up ig-update-cardholder-spending-rules endpoint'
@@ -80,7 +80,10 @@ eval "gcloud functions deploy ig-update-cardholder-spending-rules ${default_func
   --timeout 1200 \
   --ingress-settings=all \
   --service-account ${service_acct} \
-  --set-secrets 'STRIPE_API_KEY=${stripe_api_key_write_name}:latest'"
+  --set-secrets 'STRIPE_API_KEY=${stripe_api_key_write_name}:latest'" &
+
+wait
+echo '---- all function deploys finished'
 
 
 local gcp_scheduler_cmd=create
