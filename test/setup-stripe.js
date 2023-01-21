@@ -86,7 +86,7 @@ const setupOneTransactionWithRefundCardholder = async () => {
   cardholder = await stripe.issuing.cardholders.create({
 	  name: 'Jenny Rosen',
 	  email: transactionWithRefundCardholderEmail,
-	  phone_number: '+18008675309',
+	  phone_number: '+18008675308',
 	  status: 'active',
 	  type: 'individual',
 	  metadata: spendingControls.defaultMetadata(),
@@ -116,7 +116,7 @@ const setupOneTransactionWithRefundCardholder = async () => {
   const customer = await stripe.customers.create({
 	  name: 'Jenny Rosen Transactions',
 	  email: transactionCardholderEmail,
-	  phone: '+18008675309',
+	  phone: '+18008675307',
 	  description: 'Issuing Cardholder',
 	  address: {
 	    line1: '123 Main Street',
@@ -165,7 +165,7 @@ const setupOneTransactionCardholder = async () => {
   cardholder = await stripe.issuing.cardholders.create({
 	  name: 'Jenny Rosen',
 	  email: transactionCardholderEmail,
-	  phone_number: '+18008675309',
+	  phone_number: '+18008675306',
 	  status: 'active',
 	  type: 'individual',
 	  metadata: spendingControls.defaultMetadata(),
@@ -195,7 +195,7 @@ const setupOneTransactionCardholder = async () => {
   const customer = await stripe.customers.create({
 	  name: 'Jenny Rosen Transactions',
 	  email: transactionCardholderEmail,
-	  phone: '+18008675309',
+	  phone: '+18008675305',
 	  description: 'Issuing Cardholder',
 	  address: {
 	    line1: '123 Main Street',
@@ -239,7 +239,7 @@ const setupOneTransactionAndPendingCardholder = async () => {
   cardholder = await stripe.issuing.cardholders.create({
 	  name: 'Jenny Rosen',
 	  email: transactionPendingCardholderEmail,
-	  phone_number: '+18008675309',
+	  phone_number: '+18008675304',
 	  status: 'active',
 	  type: 'individual',
 	  metadata: spendingControls.defaultMetadata(),
@@ -269,7 +269,7 @@ const setupOneTransactionAndPendingCardholder = async () => {
   const customer = await stripe.customers.create({
 	  name: 'Jenny Rosen Transactions',
 	  email: transactionPendingCardholderEmail,
-	  phone: '+18008675309',
+	  phone: '+18008675303',
 	  description: 'Issuing Cardholder',
 	  address: {
 	    line1: '123 Main Street',

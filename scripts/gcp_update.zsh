@@ -27,17 +27,33 @@ eval "gcloud functions deploy ig-balance ${default_function_opts} \
   --ingress-settings=all \
   --set-secrets 'STRIPE_API_KEY=${stripe_api_key_read_name}:latest'"
 
+echo '---- Setting up wh-twilio endpoint'
+eval "gcloud functions deploy wh-twilio ${default_function_opts} \
+  --entry-point=whTwilio \
+  --allow-unauthenticated \
+  --min-instances 0 \
+  --max-instances 2 \
+  --timeout 10 \
+  --ingress-settings=all \
+  --set-secrets 'STRIPE_API_KEY=STRIPE_ISSUING_WRITE:latest' \
+  --set-secrets 'TWILIO_PHONE_NUMBER=TWILIO_PHONE_NUMBER:latest' \
+  --set-secrets 'TWILIO_ACCOUNT_SID=TWILIO_ACCOUNT_SID:latest' \
+  --set-secrets 'TWILIO_AUTH_TOKEN=TWILIO_AUTH_TOKEN:latest'"
+
 
 echo '---- Setting up wh-cardholder-setup endpoint'
 eval "gcloud functions deploy wh-cardholder-setup ${default_function_opts} \
   --entry-point=whCardholderSetup \
   --allow-unauthenticated \
-  --min-instances 1 \
+  --min-instances 0 \
   --max-instances 2 \
   --timeout 10 \
   --ingress-settings=all \
   --set-secrets 'STRIPE_API_KEY=${stripe_api_key_write_name}:latest' \
-  --set-secrets 'STRIPE_AUTH_WEBHOOK_SECRET=${stripe_api_key_cardholder_setup_name}:latest'"
+  --set-secrets 'STRIPE_AUTH_WEBHOOK_SECRET=${stripe_api_key_cardholder_setup_name}:latest' \
+  --set-secrets 'TWILIO_PHONE_NUMBER=TWILIO_PHONE_NUMBER:latest' \
+  --set-secrets 'TWILIO_ACCOUNT_SID=TWILIO_ACCOUNT_SID:latest' \
+  --set-secrets 'TWILIO_AUTH_TOKEN=TWILIO_AUTH_TOKEN:latest'"
 
 
 echo '---- Setting up wh-authorization endpoint'
@@ -45,11 +61,14 @@ eval "gcloud functions deploy wh-authorization ${default_function_opts} \
   --entry-point=whAuthorization \
   --allow-unauthenticated \
   --min-instances 1 \
-  --max-instances 2 \
+  --max-instances 4 \
   --timeout 10 \
   --ingress-settings=all \
   --set-secrets 'STRIPE_API_KEY=${stripe_api_key_write_name}:latest' \
-  --set-secrets 'STRIPE_AUTH_WEBHOOK_SECRET=${stripe_api_key_auth_webhook_name}:latest'"
+  --set-secrets 'STRIPE_AUTH_WEBHOOK_SECRET=${stripe_api_key_auth_webhook_name}:latest' \
+  --set-secrets 'TWILIO_PHONE_NUMBER=TWILIO_PHONE_NUMBER:latest' \
+  --set-secrets 'TWILIO_ACCOUNT_SID=TWILIO_ACCOUNT_SID:latest' \
+  --set-secrets 'TWILIO_AUTH_TOKEN=TWILIO_AUTH_TOKEN:latest'"
 
 
 echo '---- Setting up ig-update-cardholder-spending-rules endpoint'
@@ -88,10 +107,12 @@ eval "gcloud scheduler jobs ${gcp_scheduler_cmd} http ${job_name} \
 local balance_uri=`gcloud functions describe ig-balance --format='json' | jq -r '.serviceConfig.uri'`
 local auth_uri=`gcloud functions describe wh-authorization --format='json' | jq -r '.serviceConfig.uri'`
 local cardholder_setup_uri=`gcloud functions describe wh-cardholder-setup --format='json' | jq -r '.serviceConfig.uri'`
+local twilio_uri=`gcloud functions describe wh-twilio --format='json' | jq -r '.serviceConfig.uri'`
 
 echo "\n\n\n------------------------------"
 echo "  balance endpoint uri:                ${balance_uri}"
 echo "  auth validation Stripe webhook uri:  ${auth_uri}"
 echo "  cardholder setup Stripe Webhook uri: ${cardholder_setup_uri}"
-echo "  "
+echo "  twilio webhook uri:                  ${twilio_uri}"
+echo "\n"
 echo "  job setup for refill checks: ${job_name}"

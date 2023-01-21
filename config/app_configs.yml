@@ -41,3 +41,46 @@ approved_vendors:
   "SQ *WESTBEACH FARM": 98245
   "SQ *WOW FARM LLC": 98279
   "TERRA FLEURS": 98122
+sms_declined_vendor_not_found_submsg: >
+  'VENDOR_NAME' is not a verified Island Grown Card vendor.
+sms_declined_over_balance_submsg: >
+  'VENDOR_NAME' for $AUTH_AMT is over your current balance of $CURRENT_BALANCE
+sms_declined_msg: >
+  Island Grown Card:
+    Your recent transaction was denied
+
+  DECLINED_MSG
+
+  reply STOP to unsubscribe
+sms_balance_msg: >
+  Island Grown Card:
+    Current Balance: $CURRENT_BALANCE
+    Spending Limit: $SPEND_LIMIT
+
+  reply STOP to unsubscribe
+sms_help_msg: >
+  Island Grown Card:
+    reply B or BALANCE to see balance
+    reply H or HELP to see this message again.
+
+
+  If your transaction is declined, you'll receive a message as to why.
+
+  reply STOP to unsubscribe
+sms_welcome_msg: >
+  Welcome to your Island Grown Card!
+
+  If your transaction is declined, you'll receive a message as to why.
+
+  You can:
+    - reply B or BALANCE to see your remaining balance
+    - reply H or HELP to see this message again.
+    - reply STOP to unsubscribe
+
+  Thank you and enjoy your Island Grown Card!
+sms_stop_msg: >
+  Island Grown Card:
+
+  We'll stop sending you notifications, including about declined transactions.
+
+  To start receiving notifications again, just reply with anything.

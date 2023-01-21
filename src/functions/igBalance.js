@@ -43,7 +43,6 @@ const addDeprecationNote = (responseOutput) => {
   return responseOutput
 }
 
-
 const verifyParams = async (req) => {
   // NOTE: do NOT normalize email; that strips dots, or + from the email...
   // TODO: make sure we normalize emails on the stripe side, perhaps during post-init

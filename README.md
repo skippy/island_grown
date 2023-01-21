@@ -16,6 +16,7 @@ This program is designed to roll many of those programs into a single physical c
 * the cards can be used at select local merchants, such as local food co-ops and farm stands (see an example of a local merchant whitelist [here](./config/app_configs.yml))
 * when a customer uses their card at a merchant, Stripe calls a [webhook](./src/functions/whAuthorization.js) to verify if the merchant is allowed or not. Stripe also checks the spending controls to see if the customer has enough balance on their card.
 * customers can check their balance by using a webpage provided by county health which hits a [backend endpoint](./src/functions/igBalance.js), such as `GET https://cloud-function-hostname?email=example@gmail.com`
+* customers will also receive sms msgs for failed trasactions.  They can text the number for the current balance,and opt out or back in at anytime.
 * on a set schedule (currently nightly) a [script](https://github.com/skippy/island_grown/blob/main/src/functions/igUpdateCardholderSpendingRules.js) is run to check if customers whom are using their card are eligible for a refill.
 
 
@@ -25,8 +26,9 @@ This program is designed to roll many of those programs into a single physical c
 ### Requirements
 
 * [Stripe account](https://dashboard.stripe.com/register)
-* nodejs & yarn
+* nodejs, yarn
 * Service to host webhooks and endpoints.  The code is platform agnostic, and can be run on local servers or various cloud services.  This repository is currently configured to use GCP via a [setup script](scripts/gcp_update.zsh)
+* [Twilio](https://www.twilio.com/) is optional, but enables SMS messaging
 
 
 ### Stripe Setup
@@ -39,6 +41,13 @@ This program is designed to roll many of those programs into a single physical c
    * issuing write key: with `write` resource permissions for `issuing_authorizations`,`issuing_cardholders`, `issuing_cards`, and `read` permissions for `issuing_transactions`
  * Securely manage these API keys (e.g., do not check them in)
 
+
+### Twilio Setup
+* you'll want a number
+* highly recommended that you use a standard API key rather than the root account auth token
+* Securely manage the keys; testing does not need keys, but if you want, use the test auth token
+
+
 ### Development & Testing
 
 * make your Stripe API test key available to run tests. Store `STRIPE_API_KEY={your_long_stripe_key}` in `.env`.
@@ -47,6 +56,8 @@ This program is designed to roll many of those programs into a single physical c
 yarn install
 yarn run test
 ```
+
+download and install [ngrok](https://ngrok.com/download)
 
 This creates and uses test data hosted by [Stripe in their test environment](https://dashboard.stripe.com/test/developers).  If the test data gets corrupted, go to the [Test Developer Dashboard](https://dashboard.stripe.com/test/developers) and click 'Delete all test data…'
 
@@ -66,13 +77,30 @@ The following scripts need to be running
 
 OPTIONAL:
 * `src/functions/igUpdateCardholderSpendingRules.js`: Can be run on a cron job to update uers spending limits if they are qualified for a refill.
+* `src/functions/whTwilio.js`: to handle sms conversations
 
 
 #### Stripe Webhooks
 
 once your host is setup, you'll need to add [Stripe Webhooks](https://dashboard.stripe.com/webhooks)
 
-* Authorication: link to the url to call `src/functions/whAuthorization.js`.  Events to send should be `issuing_authorization.request`,
+* Authorication: link to the url to call `src/functions/whAuthorization.js`.  Events to send should be `issuing_authorization.request`, `issuing_authorization.created`
 * Cardholder Setup: link to the url to call `src/functions/whCardholderSetup.js`.  Events to send should be `issuing_cardholder.created`, `issuing_cardholder.updated`, `issuing_card.created`, `issuing_card.updated`,
 
 Each webhook has a signing secret.  Treat these as API keys, and store them in the same manner, and pass them to the running process via the ENV as `STRIPE_AUTH_WEBHOOK_SECRET`
+
+
+#### Twilio Webhooks
+
+Make sure the following ENV variables are setup
+```sh
+TWILIO_ACCOUNT_SID
+TWILIO_API_KEY
+TWILIO_API_SECRET
+TWILIO_PHONE_NUMBER
+```
+if those environment variables aren't passed to the following runtime, SMS will not be enabled
+* `/whTwilio`: handles msgs received from user via SMS messages, such as BALANCE or HELP
+* `/whCardholderSetup`: sends welcome sms if user has phone setup and they haven't received one before
+* `/whAuthorization`: sends sms for failed transactions
+

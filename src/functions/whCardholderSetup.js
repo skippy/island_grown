@@ -2,6 +2,7 @@ import config from '../config.js'
 import * as stripeUtils from '../stripe-utils.js'
 import { spendingControls } from '../spending-controls.js'
 import { logger } from '../logger.js'
+import sms from '../sms.js'
 
 /**
  * webHook for cardholder and card create and update
@@ -44,6 +45,8 @@ export const whCardholderSetup = async (req, res) => {
         updateData.email = updatedEmail
       }
 
+      // send out welcome sms msg if enabled
+      sms.sendWelcomeMsg(issuingCardholder)
       if (Object.keys(updateData).length > 0) {
         logger.info('updating cardholder data')
         logger.debug(updateData)

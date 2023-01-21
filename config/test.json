@@ -1,4 +1,5 @@
 {
 	"port": 3000,
+	"twilio_phone_number": "+15005550006",
 	"log_level": "warn"
 }

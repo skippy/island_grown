@@ -44,6 +44,41 @@ const config = convict({
     sensitive: true,
     env: 'STRIPE_AUTH_WEBHOOK_SECRET'
   },
+  twilio_phone_number: {
+    doc: 'Twilio phone number',
+    format: String,
+    // this is a twilio test phone number!
+    default: '',
+    env: 'TWILIO_PHONE_NUMBER'
+  },
+  sms_welcome_msg: {
+    format: String,
+    default: ''
+  },
+  sms_help_msg: {
+    format: String,
+    default: ''
+  },
+  sms_stop_msg: {
+    format: String,
+    default: ''
+  },
+  sms_declined_vendor_not_found_submsg: {
+    format: String,
+    default: ''
+  },
+  sms_declined_over_balance_submsg: {
+    format: String,
+    default: ''
+  },
+  sms_declined_msg: {
+    format: String,
+    default: ''
+  },
+  sms_balance_msg: {
+    format: String,
+    default: ''
+  },
   base_funding_amt: {
     format: 'int',
     default: null

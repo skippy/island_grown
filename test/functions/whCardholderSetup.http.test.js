@@ -5,6 +5,7 @@ import sinon from 'sinon'
 import server from '../../src/server.js'
 import * as stripeUtils from '../../src/stripe-utils.js'
 import config from '../../src/config.js'
+import sms from '../../src/sms.js'
 
 chai.use(chaiHttp)
 const should = chai.should()
@@ -81,6 +82,16 @@ describe('/POST whCardholderSetup', () => {
       .post('/whCardholderSetup')
     res.should.have.status(200)
     expect(cardholdersUpdateStub.notCalled).to.be.true
+  })
+
+  it('should send an sms welcome message', async () => {
+    const smsStub = sandbox.stub(sms, 'sendWelcomeMsg')
+
+    const res = await chai.request(server)
+      .post('/whCardholderSetup')
+    res.should.have.status(200)
+    expect(smsStub.calledOnce).to.be.true
+    expect(smsStub.getCall(0).args).to.eql([sampleCardholder])
   })
 })
 

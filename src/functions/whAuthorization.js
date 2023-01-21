@@ -2,6 +2,7 @@ import config from '../config.js'
 import bodyParser from 'body-parser'
 import * as stripeUtils from '../stripe-utils.js'
 import { logger } from '../logger.js'
+import sms from '../sms.js'
 
 /**
  *
@@ -21,12 +22,12 @@ export const whAuthorization = async (req, res) => {
   }
 
   // Handle the event
+  const issuingAuth = event.data.object
+  const merchantData = issuingAuth.merchant_data
+  logger.debug(event.type)
   switch (event.type) {
     case 'issuing_authorization.request':
     // case 'issuing_authorization.created':
-      const issuingAuth = event.data.object
-      const merchantData = issuingAuth.merchant_data
-      logger.debug('Merchant Data')
       logger.debug(merchantData)
 
       const merchantName = merchantData.name
@@ -50,6 +51,14 @@ export const whAuthorization = async (req, res) => {
       })
 
       return res.end(body)
+      break
+    case 'issuing_authorization.created':
+      logger.debug(issuingAuth)
+      logger.debug(issuingAuth.approved)
+      if (!issuingAuth.approved) {
+        await sms.sendDeclinedMsg(issuingAuth)
+      }
+      return res.send()
       break
     default:
       logger.warn(`Unhandled event type ${event.type}`)
