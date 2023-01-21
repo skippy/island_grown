@@ -78,7 +78,7 @@ The following scripts need to be running
 * `src/functions/whCardholderSetup.js`: a webhook for stripe to call when a cardholder is created or updated.  It sets up the spending limits.
 
 OPTIONAL:
-* `src/functions/igUpdateCardholderSpendingRules.js`: Can be run on a cron job to update uers spending limits if they are qualified for a refill, normalize data, send welcome sms msgs, and other jobs.
+* `src/functions/igUpdateCardholderSpendingRules.js`: Can be run on a cron job to update uers spending limits if they are qualified for a refill, normalize data, send welcome sms msgs, and other jobs.  **WARNING** this cannot be publically exposed as there is no authentication which would prevent someone from hitting this endpoint over and over.
 * `src/functions/whTwilio.js`: to handle sms conversations
 
 
