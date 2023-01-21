@@ -19,13 +19,13 @@ export const whTwilio = async (req, res) => {
   logger.debug(`Incoming message from ${req.body.From}: ${req.body.Body}`)
   const cardholder = await stripeUtils.retrieveCardholderByPhone(req.body.From)
   if (!cardholder) {
-    // TODO: can we prevent spaming?  return something to twilio to prevent being spammed
+    // TODO: can we prevent spaming?  return something to twilio to notify them to not allow frequent retries?
     return res.status(404).send('Not Found')
   }
-  const msg = req.body.Body.toLowerCase().trim()
+  const incomingMsg = req.body.Body.toLowerCase().trim()
   let responseMsg = ''
-  logger.debug(msg)
-  switch (msg) {
+  logger.debug(incomingMsg)
+  switch (incomingMsg) {
     case 'stop':
     case 'cancel':
     case 'end':
