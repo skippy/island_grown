@@ -7,10 +7,8 @@
  *   - any authorization failures will notify the user as to why
  */
 import Twilio from 'twilio'
-import { check, validationResult } from 'express-validator'
 import config from '../config.js'
 import * as stripeUtils from '../stripe-utils.js'
-import { spendingControls } from '../spending-controls.js'
 import { logger } from '../logger.js'
 import sms from '../sms.js'
 
