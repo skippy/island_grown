@@ -16,14 +16,14 @@ import sms from '../sms.js'
  * @return {JSON} balance object
  */
 export const whCardholderSetup = async (req, res) => {
-  const sig = req.headers['stripe-signature']
   let event
 
   try {
+    const sig = req.headers['stripe-signature']
     const whSecret = config.get('stripe_auth_webhook_secret')
     event = stripeUtils.stripe.webhooks.constructEvent(req.rawBody, sig, whSecret)
   } catch (err) {
-    res.status(400).send(`Webhook Error: ${err.message}`)
+    res.status(400).send(`Webhook Error: ${_.escape(err.message)}`)
     return
   }
 

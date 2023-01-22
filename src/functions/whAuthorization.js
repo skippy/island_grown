@@ -1,5 +1,6 @@
 import config from '../config.js'
 import bodyParser from 'body-parser'
+import lodash from 'lodash'
 import * as stripeUtils from '../stripe-utils.js'
 import { logger } from '../logger.js'
 import sms from '../sms.js'
@@ -11,13 +12,14 @@ import sms from '../sms.js'
  * @return {JSON} balance object
  */
 export const whAuthorization = async (req, res) => {
-  const sig = req.headers['stripe-signature']
   let event
 
   try {
-    event = stripeUtils.stripe.webhooks.constructEvent(req.rawBody, sig, config.get('stripe_auth_webhook_secret'))
+    const sig = req.headers['stripe-signature']
+    const whSecret = config.get('stripe_auth_webhook_secret')
+    event = stripeUtils.stripe.webhooks.constructEvent(req.rawBody, sig, whSecret)
   } catch (err) {
-    res.status(400).send(`Webhook Error: ${err.message}`)
+    res.status(400).send(`Webhook Error: ${_.escape(err.message)}`)
     return
   }
 
