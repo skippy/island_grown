@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is the software to help manage some of the [San Juan County, WA](https://sanjuanco.com/) [Dept. of Health](https://sanjuanco.com/1777/Health-Community-Services) food assistance program.
+This is the software to help manage some of the [San Juan County, WA](https://sanjuanco.com/) [Dept. of Health](https://sanjuanco.com/1777/Health-Community-Services) food assistance programs.
 
 The county manages and assists with a number of food assistance programs, ranging from the federal government to numerous local non-profits. They all have their own requirements and demands on both the consumer and merchant (paper coupons, special local vouchers, etc) that require training and significant time by the merchants and county health staff to manage.
 
