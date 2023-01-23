@@ -1068,13 +1068,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-validator@npm:^6.14.2":
-  version: 6.14.2
-  resolution: "express-validator@npm:6.14.2"
+"express-validator@npm:^6.14.3":
+  version: 6.14.3
+  resolution: "express-validator@npm:6.14.3"
   dependencies:
     lodash: ^4.17.21
     validator: ^13.7.0
-  checksum: f19641a8f8bde39ebf9418e8798c22736ffe1c90081f97a4b66d6d0f185bce2c20cbcc170d21c5d10f8fd410bb8de38c31592021be4306b9936bc3c566741dc0
+  checksum: ad425f56eae734d92c913ad33b2571124cede59c4ac94e005bcec474dffe83c24e5683fa381694e701e7afbbc58946c5651c4db9ea42adf5e8c143c4f4eaec96
   languageName: node
   linkType: hard
 
@@ -1759,7 +1759,7 @@ __metadata:
     dotenv: ^16.0.3
     escape-html: ^1.0.3
     express: ^4.18.2
-    express-validator: ^6.14.2
+    express-validator: ^6.14.3
     js-yaml: ^4.1.0
     lodash: ^4.17.21
     mocha: ^10.2.0
