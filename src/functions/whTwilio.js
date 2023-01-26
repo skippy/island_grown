@@ -24,7 +24,6 @@ export const whTwilio = async (req, res) => {
   }
   const incomingMsg = req.body.Body.toLowerCase().trim()
   let responseMsg = ''
-  logger.debug(incomingMsg)
   switch (incomingMsg) {
     case 'stop':
     case 'cancel':
