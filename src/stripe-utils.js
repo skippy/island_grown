@@ -21,7 +21,7 @@ export const retrieveCardholderByEmail = async (email) => {
 
 export const retrieveCardholderByPhone = async (val) => {
   if (val === undefined || val === null || val.trim() === '') return null
-  const phoneNumber = parsePhoneNumber(val, 'USA')
+  const phoneNumber = parsePhoneNumber(val, 'US')
   if (!phoneNumber) return null
   if(!phoneNumber.isValid()){
     logger.error(`phone number is not valid: ${phoneNumber}`)

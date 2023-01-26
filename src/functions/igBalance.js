@@ -3,12 +3,14 @@ import config from '../config.js'
 import * as stripeUtils from '../stripe-utils.js'
 import { spendingControls } from '../spending-controls.js'
 import { logger } from '../logger.js'
+import parsePhoneNumber from 'libphonenumber-js'
 
 /**
  * responds with a user's transaction history, spending limit, and balance
  *
  * Expects the following request query items:
  *   - email OR
+ *   - phone_number OR
  *   - last4, exp_month, exp_year
  *
  * @param req https://expressjs.com/en/api.html#req
@@ -21,6 +23,7 @@ export const igBalance = async (req, res) => {
     return res.status(400).send(errMsgs[0])
   }
   const cardholder = await stripeUtils.retrieveCardholderByEmail(req.query.email) ||
+                     await stripeUtils.retrieveCardholderByPhone(req.query.phone_number) ||
                      await stripeUtils.retrieveCardholderByLast4Exp(
                        req.query.last4,
                        req.query.exp_month,
@@ -54,6 +57,14 @@ const verifyParams = async (req) => {
     .optional()
     .withMessage('email is not valid')
     .run(req)
+  await check('phone_number')
+    .custom(value => {
+      const phoneNumber = parsePhoneNumber(value, 'US')
+      return phoneNumber && phoneNumber.isValid()
+    })
+    .optional()
+    .withMessage('phone_number is not valid')
+    .run(req)
   await check('last4')
     .toInt()
     .custom(value => {
@@ -84,8 +95,8 @@ const verifyParams = async (req) => {
   if (!errors.isEmpty()) {
     errMsgs.push(...errors.array().map(e => e.msg))
   } else if (Object.keys(req.query).length === 0) {
-    errMsgs.push('email or the last4, exp_month, and exp_year of the credit card are expected')
-  } else if (req.query.email === undefined) {
+    errMsgs.push('email, phone_number, or the last4, exp_month, and exp_year of the credit card are expected')
+  } else if (req.query.email === undefined && req.query.phone_number === undefined) {
     if (req.query.last4 === undefined ||
         req.query.exp_month === undefined ||
         req.query.exp_year === undefined) {

@@ -10,6 +10,7 @@ chai.use(chaiHttp)
 describe('/GET igBalance', () => {
   const validVals = [
     { email: 'someone@nope.com' },
+    { phone_number: '800 867-5309' },
     { last4: 1234, exp_month: 12, exp_year: new Date().getFullYear() + 1 },
     { email: 'someone@nope.com', last4: 1234, exp_month: 12, exp_year: new Date().getFullYear() + 1 }
   ]
@@ -107,6 +108,17 @@ describe('/GET igBalance', () => {
           done()
         })
 	  })
+
+    it('should return a 400 if an invalid phone is passed in', (done) => {
+      chai.request(server)
+        .get('/igBalance')
+        .query({ phone_number: '867-5309' })
+        .end((err, res) => {
+          res.should.have.status(400)
+          res.text.should.be.eq('phone_number is not valid')
+          done()
+        })
+    })
 
   	const testVals = {
   		last4: '1234',

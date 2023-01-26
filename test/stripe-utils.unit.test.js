@@ -41,7 +41,7 @@ describe('stripe-utils', () => {
     it('should return the matching cardholder even if the phone number is not in a standardized format', async() => {
       const validVals = ['18008675309', '+18008675309', '1-800-867-5309',
                          '800 867 5309', '800.867.5309', '800 (867) 5309',
-                         '+1 800     867    5309   ']
+                         '800 867-5309', '+1 800     867    5309   ']
       validVals.forEach(async (validVal) => {
           let ch = await stripeUtils.retrieveCardholderByPhone(validVal)
           expect(ch).to.not.be.null
