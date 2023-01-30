@@ -22,7 +22,7 @@ export const whTwilio = async (req, res) => {
     // TODO: can we prevent spaming?  return something to twilio to notify them to not allow frequent retries?
     return res.status(404).send('Not Found')
   }
-  const incomingMsg = (req.body.Body.constructor === String) ? req.body.Body.toLowerCase().trim() : req.body.Body
+  const incomingMsg = (req.body.Body instanceof String) ? req.body.Body.toLowerCase().trim() : ''
   let responseMsg = ''
   switch (incomingMsg) {
     case 'stop':
