@@ -19,7 +19,7 @@ export const whAuthorization = async (req, res) => {
     const whSecret = config.get('stripe_auth_webhook_secret')
     event = stripeUtils.stripe.webhooks.constructEvent(req.rawBody, sig, whSecret)
   } catch (err) {
-    res.status(400).send(`Webhook Error: ${_.escape(err.message)}`)
+    res.status(400).send(`Webhook Error: ${lodash.escape(err.message)}`)
     return
   }
 
@@ -33,7 +33,7 @@ export const whAuthorization = async (req, res) => {
       logger.debug(merchantData)
 
       const merchantName = merchantData.name
-      const merchantNameRegEx = new RegExp(escapeRegex(merchantName), 'i')
+      const merchantNameRegEx = new RegExp(lodash.escapeRegExp(merchantName), 'i')
 
       const vendors = config.get('approved_vendors')
       const foundVendor = Object.keys(vendors).find(vn => merchantNameRegEx.test(vn.toLowerCase()))
@@ -67,8 +67,4 @@ export const whAuthorization = async (req, res) => {
   }
   // Return a 200 response to acknowledge receipt of the event
   res.send()
-}
-
-const escapeRegex = (string) => {
-  return string.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&')
 }
