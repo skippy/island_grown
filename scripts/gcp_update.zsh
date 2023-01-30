@@ -31,7 +31,7 @@ echo '---- Setting up wh-twilio endpoint'
 eval "gcloud functions deploy wh-twilio ${default_function_opts} \
   --entry-point=whTwilio \
   --allow-unauthenticated \
-  --min-instances 0 \
+  --min-instances 1 \
   --max-instances 2 \
   --timeout 10 \
   --ingress-settings=all \
