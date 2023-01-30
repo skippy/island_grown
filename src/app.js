@@ -2,6 +2,8 @@
 
 import express from 'express'
 import bodyParser from 'body-parser'
+import helmet from 'helmet'
+
 import Twilio from 'twilio'
 import config from './config.js'
 import { logger } from './logger.js'
@@ -16,7 +18,9 @@ logger.level = config.get('log_level')
 const shouldValidateTwilio = config.get('env') !== 'test'
 
 const app = express()
-const port = config.get('port')
+app.use(helmet())
+app.disable('x-powered-by')
+// const port = config.get('port')
 
 // need to add rawBody so we can pass it back to Stripe-js to verify signature
 app.use(bodyParser.json({
