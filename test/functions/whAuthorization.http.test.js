@@ -96,6 +96,18 @@ describe('/POST whAuthorization', () => {
       res.should.have.status(200)
       expect(res.body.approved).to.be.true
     })
+
+    it('should return an approved code if the whitelisted vendor name is a subset of the incoming vendor name', async () => {
+      const vendors = config.get('approved_vendors')
+      const validVendorName = Object.keys(vendors)[0]
+      const validVendorPostalCode = vendors[validVendorName]
+      sampleAuthorization.merchant_data.name = "SQARE * " + validVendorName + " --"
+      sampleAuthorization.merchant_data.postal_code = validVendorPostalCode
+      const res = await chai.request(server)
+        .post('/whAuthorization')
+      res.should.have.status(200)
+      expect(res.body.approved).to.be.true
+    })
   })
 
   describe('for issuing_authorization.created', () => {

@@ -32,11 +32,10 @@ export const whAuthorization = async (req, res) => {
     // case 'issuing_authorization.created':
       logger.debug(merchantData)
 
-      const merchantName = merchantData.name
-      const merchantNameRegEx = new RegExp(lodash.escapeRegExp(merchantName), 'i')
+      const merchantName = lodash.escape(merchantData.name).toLowerCase()
 
       const vendors = config.get('approved_vendors')
-      const foundVendor = Object.keys(vendors).find(vn => merchantNameRegEx.test(vn.toLowerCase()))
+      const foundVendor = Object.keys(vendors).find(vn => merchantName.includes(vn.toLowerCase()))
       const vendorVerified = foundVendor ? vendors[foundVendor].toString() === merchantData.postal_code.toString() : false
       logger.debug(`found vendor? ${foundVendor || false} -- verified vendor? ${vendorVerified || false}`)
 
