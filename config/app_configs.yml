@@ -45,6 +45,7 @@ approved_vendors:
   "TERRA FLEURS": 98122
   "SQ *WARM VALLEY ORCHAR": 98280
   "SQ *ORCAS FARM": 98245
+  "SQ *NEW HANNAH FARM": 98250
 
 sms_declined_vendor_not_found_submsg: >
   'VENDOR_NAME' is not a verified Island Grown Card vendor.
