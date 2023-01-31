@@ -62,7 +62,7 @@ eval "gcloud functions deploy wh-authorization ${default_function_opts} \
   --allow-unauthenticated \
   --min-instances 1 \
   --max-instances 4 \
-  --timeout 3 \
+  --timeout 5 \
   --ingress-settings=all \
   --set-secrets 'STRIPE_API_KEY=${stripe_api_key_write_name}:latest' \
   --set-secrets 'STRIPE_AUTH_WEBHOOK_SECRET=${stripe_api_key_auth_webhook_name}:latest' \

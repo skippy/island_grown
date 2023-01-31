@@ -57,6 +57,11 @@ export const whAuthorization = async (req, res) => {
       logger.debug(issuingAuth)
       logger.debug(issuingAuth.approved)
       if (!issuingAuth.approved) {
+        // this is an async response; but lets await for it so we make sure it
+        // gets sent; if not, the http response returns super quick BUT the sms msg may not be
+        // sent by the time the serverless function returns...on GCP that means the process is
+        // put on a 'back-burner' and may not get cpu for awhile (seconds, or minutes), which
+        // would delay the sending of the sms msg.
         await sms.sendDeclinedMsg(issuingAuth)
       }
       return res.send()
