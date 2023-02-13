@@ -24,7 +24,7 @@ export const retrieveCardholderByPhone = async (val) => {
   const phoneNumber = parsePhoneNumber(val, 'US')
   if (!phoneNumber) return null
   if(!phoneNumber.isValid()){
-    logger.error(`phone number is not valid: ${phoneNumber}`)
+    logger.error(`phone number is not valid: ${val}`)
   }
   const cardholders = (await stripe.issuing.cardholders.list({ phone_number: phoneNumber.number, status: 'active' })).data
   if (cardholders.length > 1) {
