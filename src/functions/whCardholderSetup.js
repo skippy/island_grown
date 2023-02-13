@@ -33,20 +33,27 @@ export const whCardholderSetup = async (req, res) => {
     case 'issuing_card.updated':
       const issuingCard = event.data.object
       // Then define and call a function to handle the event issuing_card.updated
+      logger.info('clearing card metadta and spending_controls')
+      const resetData = spendingControls.clearSpendingControls()
+      await stripeUtils.stripe.issuing.cards.update(issuingCard.id, resetData)
       break
     case 'issuing_cardholder.created':
+      const createdCardholder = event.data.object
+      sms.persistEnabled(createdCardholder)
+      //no break!  continue on with the updated logic as well
     case 'issuing_cardholder.updated':
       const issuingCardholder = event.data.object
-      const updateData = await spendingControls.recomputeSpendingLimits(issuingCardholder)
 
+      // send out welcome sms msg if enabled
+      sms.sendWelcomeMsg(issuingCardholder)
+
+      const updateData = await spendingControls.recomputeSpendingLimits(issuingCardholder)
       // normalize email
       const updatedEmail = normalizeEmail(issuingCardholder.email)
       if (updatedEmail !== issuingCardholder.email) {
         updateData.email = updatedEmail
       }
 
-      // send out welcome sms msg if enabled
-      sms.sendWelcomeMsg(issuingCardholder)
       if (Object.keys(updateData).length > 0) {
         logger.info('updating cardholder data')
         logger.debug(updateData)
