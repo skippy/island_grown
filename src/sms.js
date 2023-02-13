@@ -46,7 +46,7 @@ const welcomeMsg = () => {
 
 const sendWelcomeMsg = async (cardholder, override = false) => {
   if (!sms.isEnabled(cardholder, override)) return false
-  if (cardholder.metadata.sms_welcome_sent) return false
+  if (cardholder.metadata.sms_welcome_sent && !override) return false
 
   const response = await sms._sendTwilioMsg(cardholder.phone_number, welcomeMsg())
   await stripeUtils.stripe.issuing.cardholders.update(

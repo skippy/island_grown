@@ -58,6 +58,14 @@ describe('sms utils', async () => {
 	    expect(twilioMsgsStub.calledOnce).to.be.false
     })
 
+    it('does send if has sent before AND override is set to true', async () => {
+      sandbox.stub(sms, 'isEnabled').returns(true)
+      const clonedCH = structuredClone(sampleCardholder)
+      clonedCH.metadata.sms_welcome_sent = true
+      await sms.sendWelcomeMsg(clonedCH, true)
+	    expect(twilioMsgsStub.calledOnce).to.be.true
+    })
+
     it('upon sending msg a flag is persisted so it will not send again', async () => {
       sandbox.stub(sms, 'isEnabled').returns(true)
       await sms.sendWelcomeMsg(sampleCardholder)
