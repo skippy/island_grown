@@ -57,4 +57,23 @@ describe('/POST igUpdateCardholderSpendingRules', () => {
     expect(updateStub.calledOnce).to.be.true
     expect(updateStub.getCall(0).args).to.eql([sampleCardholder.id, { foo: 'bar' }])
   })
+
+  it('should clear all cardholder\'s card spending limits', async () => {
+    const sampleCardholder = (await stripeUtils.stripe.issuing.cardholders.list({ email: global.setupOneTransactionCardholder })).data[0]
+    const card = (await stripeUtils.stripe.issuing.cards.list({ cardholder: sampleCardholder.id })).data[0]
+
+    const cardholderListSpy = sandbox.stub(stripeUtils.stripe.issuing.cardholders, 'list').returns([sampleCardholder])
+    const cardListSpy = sandbox.stub(stripeUtils.stripe.issuing.cardholders, 'list').returns([sampleCardholder])
+    const recomputeLimitsSpy = sandbox.stub(spendingControls, 'clearSpendingControls').returns({ foo: 'bar' })
+    const updateStub = sandbox.stub(stripeUtils.stripe.issuing.cards, 'update')
+
+    const res = await chai.request(server)
+      .post('/igUpdateCardholderSpendingRules')
+      .query({ email: global.emptyCardholderEmail })
+    res.should.have.status(200)
+    expect(recomputeLimitsSpy.calledOnce).to.be.true
+    expect(updateStub.calledOnce).to.be.true
+    expect(updateStub.getCall(0).args).to.eql([sampleCardholder.id, { foo: 'bar' }])
+  })
+
 })

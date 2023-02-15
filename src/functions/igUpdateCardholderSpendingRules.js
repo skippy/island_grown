@@ -15,6 +15,12 @@ export const igUpdateCardholderSpendingRules = async (req, res) => {
     } else {
       logger.debug('cardholder not updated')
     }
+    const cards = (await stripeUtils.stripe.issuing.cards.list({ cardholder: cardholder.id })).data
+    logger.debug('updating cardholder card data')
+    for await (const c of cards) {
+      const resetData = spendingControls.clearSpendingControls()
+      const response = await stripeUtils.stripe.issuing.cards.update(c.id, resetData)
+    }
   }
   res.send()
 }
