@@ -26,7 +26,6 @@ if (options.email) {
   console.log(`    Searching for cardholder email: '${options.email}'`)
   listArgs.email = options.email
 }
-
 for await (const cardholder of stripeUtils.stripe.issuing.cardholders.list(listArgs)) {
   console.log(`resetting ${cardholder.email} (${cardholder.id})`)
   // Do something with customer
@@ -38,9 +37,6 @@ for await (const cardholder of stripeUtils.stripe.issuing.cardholders.list(listA
     clearValues
   )
   for await (const c of cards) {
-    await stripeUtils.stripe.issuing.cards.update(
-      c.id,
-      clearValues
-    )
+    await stripeUtils.stripe.issuing.cards.update(c.id, spendingControls.clearSpendingControls())
   }
 }
