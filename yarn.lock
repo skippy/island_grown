@@ -1061,13 +1061,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-validator@npm:^6.14.3":
-  version: 6.14.3
-  resolution: "express-validator@npm:6.14.3"
+"express-validator@npm:^6.15.0":
+  version: 6.15.0
+  resolution: "express-validator@npm:6.15.0"
   dependencies:
     lodash: ^4.17.21
-    validator: ^13.7.0
-  checksum: ad425f56eae734d92c913ad33b2571124cede59c4ac94e005bcec474dffe83c24e5683fa381694e701e7afbbc58946c5651c4db9ea42adf5e8c143c4f4eaec96
+    validator: ^13.9.0
+  checksum: 05c6883c7c4313bed11acd77cf81b3f25516418c27283d897e8f245f9591c11757511430d0c65a073a70fcd85346afd8fb23070a498020809bfe8cbbf62d3772
   languageName: node
   linkType: hard
 
@@ -1759,17 +1759,17 @@ __metadata:
     dotenv: ^16.0.3
     escape-html: ^1.0.3
     express: ^4.18.2
-    express-validator: ^6.14.3
+    express-validator: ^6.15.0
     helmet: ^6.0.1
     js-yaml: ^4.1.0
     libphonenumber-js: ^1.10.20
     lodash: ^4.17.21
     mocha: ^10.2.0
     sinon: ^15.0.1
-    stripe: ^11.10.0
+    stripe: ^11.11.0
     twilio: ^4.7
     winston: ^3.8.2
-    yargs: ^17.6.2
+    yargs: ^17.7.0
   languageName: unknown
   linkType: soft
 
@@ -2935,13 +2935,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stripe@npm:^11.10.0":
-  version: 11.10.0
-  resolution: "stripe@npm:11.10.0"
+"stripe@npm:^11.11.0":
+  version: 11.11.0
+  resolution: "stripe@npm:11.11.0"
   dependencies:
     "@types/node": ">=8.1.0"
     qs: ^6.11.0
-  checksum: 96457e86b2bcb250ab03d8c53d8fb20ad01981302b09bbf70807e048f81561905be51a5bfd1fa99a7082619fda8f0e8d93e4683ae1917567a03ce967a9396faa
+  checksum: 491f0e4caefc9a0baed17a87bd69e91799052235088ac92ecb699569580e305377b385ce3b4756b73096586b1664f15873589cc0f547a2cd40795e5bd6b3b44d
   languageName: node
   linkType: hard
 
@@ -3178,10 +3178,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"validator@npm:^13.6.0, validator@npm:^13.7.0":
+"validator@npm:^13.6.0":
   version: 13.7.0
   resolution: "validator@npm:13.7.0"
   checksum: 2b83283de1222ca549a7ef57f46e8d49c6669213348db78b7045bce36a3b5843ff1e9f709ebf74574e06223461ee1f264f8cc9a26a0060a79a27de079d8286ef
+  languageName: node
+  linkType: hard
+
+"validator@npm:^13.9.0":
+  version: 13.9.0
+  resolution: "validator@npm:13.9.0"
+  checksum: e2c936f041f61faa42bafd17c6faddf939498666cd82e88d733621c286893730b008959f4cb12ab3e236148a4f3805c30b85e3dcf5e0efd8b0cbcd36c02bfc0c
   languageName: node
   linkType: hard
 
@@ -3350,9 +3357,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^17.6.2":
-  version: 17.6.2
-  resolution: "yargs@npm:17.6.2"
+"yargs@npm:^17.7.0":
+  version: 17.7.0
+  resolution: "yargs@npm:17.7.0"
   dependencies:
     cliui: ^8.0.1
     escalade: ^3.1.1
@@ -3361,7 +3368,7 @@ __metadata:
     string-width: ^4.2.3
     y18n: ^5.0.5
     yargs-parser: ^21.1.1
-  checksum: 47da1b0d854fa16d45a3ded57b716b013b2179022352a5f7467409da5a04a1eef5b3b3d97a2dfc13e8bbe5f2ffc0afe3bc6a4a72f8254e60f5a4bd7947138643
+  checksum: e7d5f5b60e63b04ded7c27c3d4b194565565cac3ea19fffcdbb183bed973a83106822a04dda28ebba4811ce92949a9d9858d3935186ff8f343548bf98aab2120
   languageName: node
   linkType: hard
 
