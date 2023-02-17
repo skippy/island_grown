@@ -10,8 +10,12 @@ const should = chai.should()
 const sandbox = sinon.createSandbox()
 
 describe('sms utils', async () => {
-  const sampleCardholder = (await stripeUtils.stripe.issuing.cardholders.list({ email: global.transactionCardholderEmail })).data[0]
-  let twilioMsgsStub
+  let twilioMsgsStub, sampleCardholder, sampleAuthorization
+
+	before(async () => {
+	  sampleCardholder = (await stripeUtils.stripe.issuing.cardholders.list({ email: global.transactionCardholderEmail })).data[0]
+    sampleAuthorization = (await stripeUtils.stripe.issuing.authorizations.list({ cardholder: sampleCardholder.id, limit: 1 })).data[0]
+	})
 
   beforeEach(() => {
 	  twilioMsgsStub = sandbox.stub(sms, '_sendTwilioMsg').returns({})
@@ -88,8 +92,6 @@ describe('sms utils', async () => {
   })
 
   describe('declinedMsg', async () => {
-    const sampleAuthorization = (await stripeUtils.stripe.issuing.authorizations.list({ cardholder: sampleCardholder.id, limit: 1 })).data[0]
-
 	  it('should return false if the authorization was not declined', async () => {
 	  	const clonedAut = structuredClone(sampleAuthorization)
 	  	clonedAut.approved = true
@@ -138,7 +140,6 @@ describe('sms utils', async () => {
 
   describe('sendDeclinedMsg', async () => {
     let clonedAut
-    const sampleAuthorization = (await stripeUtils.stripe.issuing.authorizations.list({ cardholder: sampleCardholder.id, limit: 1 })).data[0]
     // let twilioMsgsStub
     beforeEach(() => {
       // make sure it is enabled to send
