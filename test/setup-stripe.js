@@ -26,15 +26,17 @@ global.emptyCardholderEmail = 'jenny.rubin_empty@example.com'
 let createdStripeObjects = false
 
 before(async () => {
+	// this.timeout(50000)
   await setupNoTransactionsCardholder()
   await setupOneTransactionCardholder()
   await setupOneTransactionWithRefundCardholder()
   await setupOneTransactionAndPendingCardholder()
-  if (createdStripeObjects) {
-  	console.log('**** Waiting for stripe objects to become available')
-  	// FIXME: can we keep looping until a query returns?
-  	await delay(5000)
-  }
+  // if (createdStripeObjects) {
+  // 	console.log('**** Waiting for stripe objects to become available')
+  // 	// FIXME: can we keep looping until a query returns?
+  // 	await delay(1000)
+  // }
+  // done()
 })
 
 const setupNoTransactionsCardholder = async () => {
@@ -298,6 +300,7 @@ const setupOneTransactionAndPendingCardholder = async () => {
 	  type: 'card',
 	  card: { number: card.number, exp_month: card.exp_month, exp_year: card.exp_year }
   })
+  //FIXME: does this rejected after a certain amount of time?
   await stripe.paymentIntents.create({
 	  payment_method: paymentPending.id,
 	  amount: 1000,
@@ -311,6 +314,6 @@ const setupOneTransactionAndPendingCardholder = async () => {
   console.log('**   Finished')
 }
 
-function delay (time) {
-  return new Promise(resolve => setTimeout(resolve, time))
-}
+// function delay (time) {
+//   return new Promise(resolve => setTimeout(resolve, time))
+// }
