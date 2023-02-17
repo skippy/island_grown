@@ -35,7 +35,7 @@
     "express-validator": "^6.14.3",
     "helmet": "^6.0.1",
     "js-yaml": "^4.1.0",
-    "libphonenumber-js": "^1.10.19",
+    "libphonenumber-js": "^1.10.20",
     "lodash": "^4.17.21",
     "stripe": "^11.10.0",
     "twilio": "^4.7",
