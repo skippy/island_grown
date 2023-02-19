@@ -31,6 +31,8 @@ before(async () => {
   await setupOneTransactionCardholder()
   await setupOneTransactionWithRefundCardholder()
   await setupOneTransactionAndPendingCardholder()
+
+  await checkCanceledPayment()
   // if (createdStripeObjects) {
   // 	console.log('**** Waiting for stripe objects to become available')
   // 	// FIXME: can we keep looping until a query returns?
@@ -224,10 +226,31 @@ const setupOneTransactionCardholder = async () => {
   console.log('**   Finished')
 }
 
+
+const checkCanceledPayment = async () => {
+ 	//lets check if the uncaptured payment intent was canceled by stripe, which it does automatically after 7 days
+	// see: https://stripe.com/docs/api/payment_intents/capture
+	const paymentIntents = await stripe.paymentIntents.list()
+	const canceledPayment = paymentIntents.data.find((p) => { if (p.cancellation_reason == 'automatic' && p.created >= 7 * 24 * 60 * 60) return p })
+	if(!canceledPayment) return
+  console.log('** pending payment has been canceled by stripe; setting up a new one')
+  await stripe.paymentIntents.create({
+	  payment_method: canceledPayment.payment_method,
+	  amount: 1000,
+	  currency: 'usd',
+	  payment_method_types: ['card'],
+	  capture_method: 'manual',
+	  customer: canceledPayment.customer,
+	  confirm: true
+  })
+
+}
+
 const setupOneTransactionAndPendingCardholder = async () => {
   // one transaction AND one pending
   let cardholder = (await stripe.issuing.cardholders.list({ email: global.transactionPendingCardholderEmail })).data[0]
   if (cardholder) return
+
   console.log('** creating initial stripe cardholder with 1 transaction and 1 pending')
   createdStripeObjects = true
 
@@ -300,7 +323,6 @@ const setupOneTransactionAndPendingCardholder = async () => {
 	  type: 'card',
 	  card: { number: card.number, exp_month: card.exp_month, exp_year: card.exp_year }
   })
-  //FIXME: does this rejected after a certain amount of time?
   await stripe.paymentIntents.create({
 	  payment_method: paymentPending.id,
 	  amount: 1000,
