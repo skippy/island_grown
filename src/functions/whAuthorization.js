@@ -33,14 +33,12 @@ export const whAuthorization = async (req, res) => {
       logger.debug(merchantData)
 
       const merchantName = lodash.escape(merchantData.name).toLowerCase()
-
       const vendors = config.get('approved_vendors')
       const foundVendor = Object.keys(vendors).find(vn => merchantName.includes(vn.toLowerCase()))
       const vendorVerified = foundVendor ? vendors[foundVendor].toString() === merchantData.postal_code.toString() : false
       logger.debug(`found vendor? ${foundVendor || false} -- verified vendor? ${vendorVerified || false}`)
-
       logger.info(`auth approved? ${vendorVerified}: ${issuingAuth.id}`)
-      res.writeHead(200, { 'Stripe-Version': stripeUtils.stripeVersion, 'Content-Type': 'application/json' })
+
       var body = JSON.stringify({
         approved: vendorVerified,
         metadata: {
@@ -48,9 +46,8 @@ export const whAuthorization = async (req, res) => {
           vendor_postal_code: vendors[foundVendor] || false,
           merchant_postal_code: merchantData.postal_code
         }
-
       })
-
+      res.writeHead(200, { 'Stripe-Version': stripeUtils.stripeVersion, 'Content-Type': 'application/json' })
       return res.end(body)
       break
     case 'issuing_authorization.created':
