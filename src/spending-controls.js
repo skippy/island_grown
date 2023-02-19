@@ -11,8 +11,15 @@ const defaultMetadata = (resetAll) => {
     numRefills: 0
   }
   if (!resetAll) return defaults
+  return {
+    ...clearMetadata(),
+    ...defaults
+  }
+}
 
-  const resetDefaults = {
+
+const clearMetadata = () => {
+  return {
     refill_0_amt: null,
     refill_0_date: null,
     refill_1_amt: null,
@@ -26,12 +33,11 @@ const defaultMetadata = (resetAll) => {
     funding_traunch_initial: null,
     funding_traunch_second_refill: null,
     trial: null,
-    Trial: null
+    Trial: null,
+    base_funding_amt: null,
+    numRefills: null
   }
-  return {
-    ...defaults,
-    ...resetDefaults
-  }
+
 }
 
 const defaultSpendingControls = () => {
@@ -43,6 +49,24 @@ const defaultSpendingControls = () => {
   }
 }
 
+
+// const clearSpendingControls = () => {
+//   return {
+//     spending_limits: []
+//   }
+// }
+
+
+const clearSpendingControls = () => {
+  //NOTE: possible bug in Stripe API; if additional data is sent in updateData, spending_controls: null
+  // but if no data besides spending controls is sent, you can send an empty hash to clear it
+  const updateData = {
+    metadata: spendingControls.clearMetadata(),
+    spending_controls: null
+  }
+  return updateData
+}
+
 const recomputeSpendingLimits = async (cardholder) => {
   // ASSUME cardholder is properly setup.  If not, this logic will fail.
   // rather than add logic to try to fix it, let it fail so we can figure out
@@ -51,11 +75,10 @@ const recomputeSpendingLimits = async (cardholder) => {
   // calling on itself but in the declared namespace helps stub ESM modules
   const spendingInfo = await spendingControls.getSpendBalanceTransactions(cardholder, false)
 
-  //   if(!cardholder.metadata.numRefills){
-  //     //reset metadata!  this shouldn't happen, but lets check just in case
-  //     cardholder.metadata = spendingControls.defaultMetadata()
-  //     updateData.metadata = cardholder.metadata
-  //   }
+  if(!cardholder.metadata.numRefills){
+    //reset metadata!  this shouldn't happen, but lets check just in case
+    cardholder.metadata = spendingControls.defaultMetadata()
+  }
   //   if(!cardholder.spending_controls || !cardholder.spending_controls.spending_limits || cardholder.spending_controls.spending_limits.length ===0){
   // console.log(cardholder.spending_controls)
   //     cardholder.spending_controls = spendingControls.defaultSpendingControls()
@@ -182,7 +205,9 @@ const constructListArgs = (cardholder) => {
 // using this model to help with stubbing of an ESM module
 export const spendingControls = {
   defaultMetadata,
+  clearMetadata,
   defaultSpendingControls,
+  clearSpendingControls,
   recomputeSpendingLimits,
   getSpendBalanceTransactions
 }
