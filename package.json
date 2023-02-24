@@ -40,7 +40,7 @@
     "stripe": "^11.11.0",
     "twilio": "^4.7",
     "winston": "^3.8.2",
-    "yargs": "^17.7.0"
+    "yargs": "^17.7.1"
   },
   "devDependencies": {
     "chai": "^4.3.7",
