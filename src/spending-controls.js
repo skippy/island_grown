@@ -1,6 +1,7 @@
 import config from './config.js'
 import * as stripeUtils from './stripe-utils.js'
 import { logger } from './logger.js'
+import _ from 'lodash'
 
 const defaultMetadata = (resetAll) => {
   // stripe doesn't allow a full reset of metadata;  you need to
@@ -68,25 +69,26 @@ const clearSpendingControls = () => {
 }
 
 const recomputeSpendingLimits = async (cardholder) => {
-  // ASSUME cardholder is properly setup.  If not, this logic will fail.
-  // rather than add logic to try to fix it, let it fail so we can figure out
-  // why the object was not properly setup in the first place
-  // update spending limits and refills if needed
+  // NOTE: if cardholder is NOT setup properly, this should fix that.  BUT is that proper or
+  // should we throw an exception so it doesn't quietly fix other issues...?
+
   // calling on itself but in the declared namespace helps stub ESM modules
   const spendingInfo = await spendingControls.getSpendBalanceTransactions(cardholder, false)
-
-  if(!cardholder.metadata.numRefills){
-    //reset metadata!  this shouldn't happen, but lets check just in case
-    cardholder.metadata = spendingControls.defaultMetadata()
+  const updateData = {}
+  if(_.isUndefined(cardholder.metadata) ||
+    _.isUndefined(cardholder.metadata.numRefills)){
+    //reset metadata!  this shouldn't happen, but lets check just in case because of older data
+    updateData.metadata = spendingControls.defaultMetadata()
   }
-  //   if(!cardholder.spending_controls || !cardholder.spending_controls.spending_limits || cardholder.spending_controls.spending_limits.length ===0){
-  // console.log(cardholder.spending_controls)
-  //     cardholder.spending_controls = spendingControls.defaultSpendingControls()
-  //     updateData.spending_controls = cardholder.spending_controls
-  //   }
+  if(_.isUndefined(cardholder.spending_controls) ||
+    !_.isArray(cardholder.spending_controls.spending_limits) ||
+     cardholder.spending_controls.spending_limits.length === 0){
+    updateData.spending_controls = spendingControls.defaultSpendingControls()
+  }
+
   if (spendingInfo.spend < spendingInfo.spending_limit * config.get('refill_trigger_percent')) {
     logger.debug('spend is fine; no refill needed')
-    return {}
+    return updateData
   }
 
   const refillIndex = cardholder.metadata.numRefills
@@ -94,24 +96,22 @@ const recomputeSpendingLimits = async (cardholder) => {
   const refillAmt = refillAmts[refillIndex]
   if (!refillAmt) {
     logger.debug(`approaching spending limit BUT they are maxed out on refills: ${refillIndex}`)
-    return {}
+    return updateData
   }
 
   logger.debug('spend is close to spending limit and refill is available')
-  const updateData = {
-    metadata: {
-      numRefills: parseInt(cardholder.metadata.numRefills) + 1
-    },
-    spending_controls: {
-      spending_limits: [
-        {
-          amount: ((spendingInfo.spending_limit + refillAmt) * 100),
-          interval: config.get('spending_limit_interval')
-        }
-      ]
-    }
+  updateData.metadata = updateData.metadata || {}
+  updateData.metadata.numRefills = parseInt(cardholder.metadata.numRefills) + 1
+
+  updateData.spending_controls = {
+    spending_limits: [
+      {
+        amount: ((spendingInfo.spending_limit + refillAmt) * 100),
+        interval: config.get('spending_limit_interval')
+      }
+    ]
   }
-  updateData.metadata[`refill_${refillIndex}_amt`] = refillAmt
+  updateData.metadata[`refill_${refillIndex}_amt`]  = refillAmt
   updateData.metadata[`refill_${refillIndex}_date`] = new Date().toLocaleDateString()
   return updateData
 }
@@ -174,6 +174,7 @@ const getSpendBalanceTransactions = async (cardholder, includeTransactions = tru
   return output
 }
 
+//NOTE: this hides any issues if the spending_limit is NOT set, which should never happen
 const currentAllTimeSpendingLimit = (cardholder) => {
   const sl = cardholder.spending_controls.spending_limits.find(l => l.interval === config.get('spending_limit_interval'))
   return sl ? parseFloat((sl.amount / 100).toFixed(2)) : config.get('base_funding_amt')

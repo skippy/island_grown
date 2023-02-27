@@ -1,5 +1,7 @@
 import chai, { expect } from 'chai'
 import sinon from 'sinon'
+import _ from 'lodash'
+
 import { spendingControls } from '../src/spending-controls.js'
 import * as stripeUtils from '../src/stripe-utils.js'
 import config from '../src/config.js'
@@ -61,6 +63,22 @@ describe('recomputeSpendingLimits', async () => {
     expect(defaultSpendBalance.transactions).to.be.empty
     const defaults = await spendingControls.recomputeSpendingLimits(sampleCardholder)
     expect(defaults).to.eql({})
+  })
+
+  it('should return a default metadata update if the metadata is empty', async () => {
+    const clonedCardholder = _.cloneDeep( sampleCardholder )
+    clonedCardholder.metadata = {}
+    const defaults = await spendingControls.recomputeSpendingLimits(clonedCardholder)
+    expect(defaults).to.not.be.empty
+    expect(defaults.metadata).to.eql(spendingControls.defaultMetadata())
+  })
+
+  it('should return a spending limit update if the spending limit information is empty', async () => {
+    const clonedCardholder = _.cloneDeep( sampleCardholder )
+    clonedCardholder.spending_controls = {}
+    const defaults = await spendingControls.recomputeSpendingLimits(clonedCardholder)
+    expect(defaults).to.not.be.empty
+    expect(defaults.spending_controls).to.eql(spendingControls.defaultSpendingControls())
   })
 
   it('should return an update if the spend is equal to spend_limit', async () => {
