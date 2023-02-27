@@ -1,6 +1,6 @@
 import config from '../config.js'
 import bodyParser from 'body-parser'
-import lodash from 'lodash'
+import _ from 'lodash'
 import * as stripeUtils from '../stripe-utils.js'
 import { logger } from '../logger.js'
 import sms from '../sms.js'
@@ -19,7 +19,7 @@ export const whAuthorization = async (req, res) => {
     const whSecret = config.get('stripe_auth_webhook_secret')
     event = stripeUtils.stripe.webhooks.constructEvent(req.rawBody, sig, whSecret)
   } catch (err) {
-    res.status(400).send(`Webhook Error: ${lodash.escape(err.message)}`)
+    res.status(400).send(`Webhook Error: ${_.escape(err.message)}`)
     return
   }
 
@@ -32,7 +32,7 @@ export const whAuthorization = async (req, res) => {
     // case 'issuing_authorization.created':
       logger.debug(merchantData)
 
-      const merchantName = lodash.escape(merchantData.name).toLowerCase()
+      const merchantName = _.escape(merchantData.name).toLowerCase()
       const vendors = config.get('approved_vendors')
       const foundVendor = Object.keys(vendors).find(vn => merchantName.includes(vn.toLowerCase()))
       const vendorVerified = foundVendor ? vendors[foundVendor].toString() === merchantData.postal_code.toString() : false

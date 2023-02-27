@@ -3,7 +3,7 @@ import * as stripeUtils from '../stripe-utils.js'
 import { spendingControls } from '../spending-controls.js'
 import { logger } from '../logger.js'
 import sms from '../sms.js'
-import lodash from 'lodash'
+import _ from 'lodash'
 
 /**
  * webHook for cardholder and card create and update
@@ -24,7 +24,7 @@ export const whCardholderSetup = async (req, res) => {
     const whSecret = config.get('stripe_auth_webhook_secret')
     event = stripeUtils.stripe.webhooks.constructEvent(req.rawBody, sig, whSecret)
   } catch (err) {
-    res.status(400).send(`Webhook Error: ${lodash.escape(err.message)}`)
+    res.status(400).send(`Webhook Error: ${_.escape(err.message)}`)
     return
   }
 
