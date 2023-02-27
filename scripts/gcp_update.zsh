@@ -2,6 +2,8 @@
 set -e  # fail script on error
 # set -x  # show cmds run within this script
 
+local DEFAULT_GCLOUD_PROJECT='sjfood'
+local DEFAULT_GCLOUD_REGION='us-west1'
 local job_name='check-cardholders-refill'
 local service_acct_name='Default compute service account'
 local stripe_api_key_read_name='STRIPE_ISSUING_READ_API_KEY'
@@ -9,13 +11,28 @@ local stripe_api_key_write_name='STRIPE_ISSUING_WRITE'
 local stripe_api_key_cardholder_setup_name='STRIPE_AUTH_WEBHOOK_CARDHOLDER_SETUP_SECRET'
 local stripe_api_key_auth_webhook_name='STRIPE_AUTH_WEBHOOK_SECRET'
 
-local service_acct=`gcloud iam service-accounts list --filter="${service_acct_name}" --format="json" | jq -r '.[0].email'`
+
+# us-west1
+# sjfood
+
+# read -e 'Enter gcloud project' gcloud_project
+vared -p "Enter gcloud project [${DEFAULT_GCLOUD_PROJECT}]: " -c gcloud_project
+: ${gcloud_project:=$DEFAULT_GCLOUD_PROJECT}
+vared -p "Enter gcloud region [${DEFAULT_GCLOUD_REGION}]: " -c gcloud_region
+# read -e 'Enter gcloud region' gcloud_region
+: ${gcloud_region:=$DEFAULT_GCLOUD_REGION}
+
+echo "\n"
+
+local service_acct=`gcloud iam service-accounts list --project ${gcloud_project} --filter="${service_acct_name}" --format="json" | jq -r '.[0].email'`
+
 
 local default_function_opts='--gen2 \
 --runtime=nodejs18 \
 --trigger-http \
 --memory 256Mi \
---region us-west1 '
+--region ${gcloud_region} \
+--project ${gcloud_project} '
 
 echo '---- Setting up ig-balance endpoint'
 eval "gcloud functions deploy ig-balance ${default_function_opts} \
@@ -87,16 +104,17 @@ echo '---- all function deploys finished'
 
 
 local gcp_scheduler_cmd=create
-local previouslyScheduled=`gcloud scheduler jobs list --location=us-west1 --filter="${job_name}" | wc -l`
+local previouslyScheduled=`gcloud scheduler jobs list --project ${gcloud_project} --location=${gcloud_region} --filter="${job_name}" | wc -l`
 if [[ $previouslyScheduled -gt 0 ]]; then
   gcp_scheduler_cmd=update
 fi
-local update_cardholder_spending_rules_uri=`gcloud functions describe ig-update-cardholder-spending-rules --format='json' | jq -r '.serviceConfig.uri'`
+local update_cardholder_spending_rules_uri=`gcloud functions describe ig-update-cardholder-spending-rules --project ${gcloud_project} --format='json' | jq -r '.serviceConfig.uri'`
 
 echo "---- ${gcp_scheduler_cmd}ing scheduled job"
 eval "gcloud scheduler jobs ${gcp_scheduler_cmd} http ${job_name} \
   --schedule '0 1 * * *' \
-  --location=us-west1 \
+  --location=${gcloud_region} \
+  --project ${gcloud_project} \
   --http-method=POST \
   --attempt-deadline=1800s \
   --oidc-service-account-email=${service_acct} \
@@ -107,10 +125,10 @@ eval "gcloud scheduler jobs ${gcp_scheduler_cmd} http ${job_name} \
 # gcloud dns --project=sjfood managed-zones create island-grown --description="" --dns-name="com." --visibility="public" --dnssec-state="on" --log-dns-queries
 
 
-local balance_uri=`gcloud functions describe ig-balance --format='json' | jq -r '.serviceConfig.uri'`
-local auth_uri=`gcloud functions describe wh-authorization --format='json' | jq -r '.serviceConfig.uri'`
-local cardholder_setup_uri=`gcloud functions describe wh-cardholder-setup --format='json' | jq -r '.serviceConfig.uri'`
-local twilio_uri=`gcloud functions describe wh-twilio --format='json' | jq -r '.serviceConfig.uri'`
+local balance_uri=`gcloud functions describe ig-balance --project ${gcloud_project} --format='json' | jq -r '.serviceConfig.uri'`
+local auth_uri=`gcloud functions describe wh-authorization --project ${gcloud_project} --format='json' | jq -r '.serviceConfig.uri'`
+local cardholder_setup_uri=`gcloud functions describe wh-cardholder-setup --project ${gcloud_project} --format='json' | jq -r '.serviceConfig.uri'`
+local twilio_uri=`gcloud functions describe wh-twilio --project ${gcloud_project} --format='json' | jq -r '.serviceConfig.uri'`
 
 echo "\n\n\n------------------------------"
 echo "  balance endpoint uri:                ${balance_uri}"
