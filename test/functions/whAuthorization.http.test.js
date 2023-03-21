@@ -108,6 +108,26 @@ describe('/POST whAuthorization', () => {
       res.should.have.status(200)
       expect(res.body.approved).to.be.true
     })
+
+    it('should return an approved code if the vendor name matches, but the postal code of the merchant does not BUT it is in the approved zipcode list', async () => {
+      const vendors = config.get('approved_vendors')
+      const postalCodes = config.get('approved_postal_codes')
+
+      const validVendorName = Object.keys(vendors)[0]
+      const validVendorPostalCode = postalCodes[0]
+      const vendorPostalCode = vendors[validVendorName]
+
+      sampleAuthorization.merchant_data.name = validVendorName
+      sampleAuthorization.merchant_data.postal_code = validVendorPostalCode.toString()
+      const res = await chai.request(server)
+        .post('/whAuthorization')
+      res.should.have.status(200)
+      expect(res.body.approved).to.be.true
+      expect(res.body.metadata.vendor_found).to.eql(validVendorName)
+      expect(res.body.metadata.in_approved_postal_code_list).to.true
+      expect(res.body.metadata.vendor_postal_code).to.be.eql(vendorPostalCode)
+      expect(res.body.metadata.merchant_postal_code).to.be.eql(validVendorPostalCode.toString())
+    })
   })
 
   describe('for issuing_authorization.created', () => {

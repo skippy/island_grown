@@ -34,23 +34,35 @@ export const whAuthorization = async (req, res) => {
 
       const merchantName = _.escape(merchantData.name).toLowerCase()
       const vendors = config.get('approved_vendors')
+      const approvedPostalCodes = config.get('approved_postal_codes')
       const foundVendor = Object.keys(vendors).find(vn => merchantName.includes(vn.toLowerCase()))
-      const vendorVerified = foundVendor ? vendors[foundVendor].toString() === merchantData.postal_code.toString() : false
+      let vendorVerified = foundVendor ? vendors[foundVendor].toString() === merchantData.postal_code.toString() : false
       logger.debug(`found vendor? ${foundVendor || false} -- verified vendor? ${vendorVerified || false}`)
       logger.info(`auth approved? ${vendorVerified}: ${issuingAuth.id}`)
-
-      var body = JSON.stringify({
-        approved: vendorVerified,
-        metadata: {
+      const metadata = {
           vendor_found: foundVendor || false,
           vendor_postal_code: vendors[foundVendor] || false,
           merchant_postal_code: merchantData.postal_code
-        }
+      }
+      //TODO: review this logic; if the vendor postal code does not match, do we:
+      //  1) look at the approved postal list
+      //  2) modify the datastructure to allow 1+ postal codes per merchant
+      //
+      if(foundVendor && !vendorVerified){
+        vendorVerified = approvedPostalCodes.find(pc => pc.toString() === merchantData.postal_code.toString()) !== undefined
+        logger.debug(`postalCode '${merchantData.postal_code}' not matched to vendor; checking general approved postal code list: '${vendorVerified}'`)
+        metadata.in_approved_postal_code_list = vendorVerified
+      }
+
+      var body = JSON.stringify({
+        approved: vendorVerified,
+        metadata: metadata
       })
       res.writeHead(200, { 'Stripe-Version': stripeUtils.stripeVersion, 'Content-Type': 'application/json' })
       return res.end(body)
       break
     case 'issuing_authorization.created':
+      //NOTE: This is triggered after the request, so if it is not approved, lets do somethin.
       logger.debug(issuingAuth)
       logger.debug(issuingAuth.approved)
       if (!issuingAuth.approved) {
