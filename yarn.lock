@@ -1482,10 +1482,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"helmet@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "helmet@npm:6.0.1"
-  checksum: 1ca20d0b7888b6208130bbb50d183e68d53bb5fa0caead2106226d6d53216dfc893b4b5c07528304e342884f75d87702003b80884b065cb5dcbc705fb4a6ad52
+"helmet@npm:^6.1.4":
+  version: 6.1.4
+  resolution: "helmet@npm:6.1.4"
+  checksum: 3f6f47d3ababd717c7fa749509f439f4262e1df9a3c7d2ba4fecaf1fc5c0092d150f621f839b68f737c4e38a7bdd990d5dacc860af0b07c070b9bf13ff8e18ba
   languageName: node
   linkType: hard
 
@@ -1796,7 +1796,7 @@ __metadata:
     escape-html: ^1.0.3
     express: ^4.18.2
     express-validator: ^6.15.0
-    helmet: ^6.0.1
+    helmet: ^6.1.4
     js-yaml: ^4.1.0
     libphonenumber-js: ^1.10.24
     lodash: ^4.17.21
