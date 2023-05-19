@@ -3108,8 +3108,8 @@ __metadata:
   linkType: hard
 
 "twilio@npm:^4.11":
-  version: 4.11.0
-  resolution: "twilio@npm:4.11.0"
+  version: 4.11.1
+  resolution: "twilio@npm:4.11.1"
   dependencies:
     axios: ^0.26.1
     dayjs: ^1.8.29
@@ -3119,7 +3119,7 @@ __metadata:
     scmp: ^2.1.0
     url-parse: ^1.5.9
     xmlbuilder: ^13.0.2
-  checksum: d5d70b8c43174a5facec28215ef2a67e8b87c5586fa7d91654805729fc88737335e286d9393731b42595add350270cfb498dc3cc3dbebfe46e346b6f48a4c2b2
+  checksum: a4af8998bd5e018924b7814176ff160a9cff3cc915d3e82b15d94be57b74a9dc52439c838e665a8bd992e87cde2c295d49888c7dfc6952f3dcc07187dab84696
   languageName: node
   linkType: hard
 
