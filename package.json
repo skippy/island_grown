@@ -39,7 +39,7 @@
     "lodash": "^4.17.21",
     "stripe": "^12.9.0",
     "twilio": "^4.11",
-    "winston": "^3.8.2",
+    "winston": "^3.9.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
