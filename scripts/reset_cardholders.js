@@ -11,7 +11,7 @@ import * as stripeUtils from '../src/stripe-utils.js'
 import { spendingControls } from '../src/spending-controls.js'
 
 const options = yargs(process.argv.slice(2))
-  .option('f', { alias: 'force', describe: 'persist changes', demandOption: true })
+  .option('f', { alias: 'force', describe: 'persist changes' })
   .option('e', { alias: 'email', describe: 'email of cardholder to reset' })
   .argv
 
@@ -27,14 +27,13 @@ if (options.email) {
   listArgs.email = options.email
 }
 for await (const cardholder of stripeUtils.stripe.issuing.cardholders.list(listArgs)) {
-  console.log(`resetting ${cardholder.email} (${cardholder.id})`)
-  const response = await stripeUtils.stripe.issuing.cardholders.update(
-    cardholder.id,
-    clearValues
-  )
-  // remove spending controls on a per-card basis... JUST in case that is still there
-  const cards = (await stripeUtils.stripe.issuing.cards.list({ cardholder: cardholder.id })).data
-  for await (const c of cards) {
-    await stripeUtils.stripe.issuing.cards.update(c.id, spendingControls.clearSpendingControls())
+  console.log(`${options.force ? '': '**NOT** '}resetting ${cardholder.email} (${cardholder.id})`)
+  console.log(clearValues)
+  console.log(clearValues.spending_controls)
+  if(options.force){
+    const response = await stripeUtils.stripe.issuing.cardholders.update(
+      cardholder.id,
+      clearValues
+    )
   }
 }

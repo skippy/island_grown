@@ -66,6 +66,8 @@ This creates and uses test data hosted by [Stripe in their test environment](htt
 
 ### Production
 
+* *reset spending controls:* make changes in `config/app_configs.yml` and then run `yarn run resetCardholders -f`
+
 #### Hosting
 
 Setting up hosting is beyond the scope of this `README` but the code should be agnostic to any platform.  We use [GCP](https://cloud.google), specifically `cloud functions`, `Job Scheduler`, `IAM`, `cloud dns`, and `Secret Manager`.  See [./scripts/gcp_update.zsh](./scripts/gcp_update.zsh).
