@@ -28,14 +28,12 @@ if (options.email) {
 }
 for await (const cardholder of stripeUtils.stripe.issuing.cardholders.list(listArgs)) {
   console.log(`resetting ${cardholder.email} (${cardholder.id})`)
-  // Do something with customer
-  const cards = (await stripeUtils.stripe.issuing.cards.list({ cardholder: cardholder.id })).data
-  // console.log(cardholder)
-  // console.log(cards)
   const response = await stripeUtils.stripe.issuing.cardholders.update(
     cardholder.id,
     clearValues
   )
+  // remove spending controls on a per-card basis... JUST in case that is still there
+  const cards = (await stripeUtils.stripe.issuing.cards.list({ cardholder: cardholder.id })).data
   for await (const c of cards) {
     await stripeUtils.stripe.issuing.cards.update(c.id, spendingControls.clearSpendingControls())
   }
