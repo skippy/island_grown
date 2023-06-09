@@ -238,7 +238,7 @@ describe('getSpendBalanceTransactions', () => {
     const response = await spendingControls.getSpendBalanceTransactions(ch)
     expect(transactionsListSpy.calledOnce).to.be.true
     // console.log(cardholderListSpy.getCall(1).args)
-    const beginningOfYear = new Date(new Date().getFullYear(), 0, 1).valueOf()
+    const beginningOfYear = new Date(new Date().getFullYear(), 0, 1).valueOf()/1000
     expect(transactionsListSpy.getCall(0).args[0]).to.eql({ cardholder: ch.id, 'created[gte]': beginningOfYear })
   })
 
@@ -252,7 +252,7 @@ describe('getSpendBalanceTransactions', () => {
     expect(transactionsListSpy.calledOnce).to.be.true
     // console.log(cardholderListSpy.getCall(1).args)
     const currDate = new Date()
-    const beginningOfMonth = new Date(currDate.getFullYear(), currDate.getMonth(), 1).valueOf()
+    const beginningOfMonth = new Date(currDate.getFullYear(), currDate.getMonth(), 1).valueOf()/1000
     expect(transactionsListSpy.getCall(0).args[0]).to.eql({ cardholder: ch.id, 'created[gte]': beginningOfMonth })
   })
 })

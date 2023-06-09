@@ -188,13 +188,13 @@ const constructListArgs = (cardholder) => {
       break
     case 'yearly':
     // get Jan 1st of current year, and return the unix timestamp
-      listArgs['created[gte]'] = new Date(new Date().getFullYear(), 0, 1).valueOf()
+      listArgs['created[gte]'] = new Date(new Date().getFullYear(), 0, 1).valueOf()/1000
       break
     case 'monthly':
     // get the 1st of current month, and return the unix timestamp
       const currDate = new Date()
       var firstDay = new Date(currDate.getFullYear(), currDate.getMonth(), 1)
-      listArgs['created[gte]'] = firstDay.valueOf()
+      listArgs['created[gte]'] = firstDay.valueOf()/1000
       break
     default:
       throw new Error("spending_limit_interval value '${const.get('spending_limit_interval')}' is not allowed")
