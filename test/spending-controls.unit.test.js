@@ -81,10 +81,17 @@ describe('recomputeSpendingLimits', async () => {
     expect(defaults.spending_controls).to.eql(spendingControls.defaultSpendingControls())
   })
 
+  it('should not return an update if the spend is equal to spend_limit but there are no refills', async () => {
+    sandbox.stub(config, 'get').withArgs('refill_amts').returns([])
+    const defaults = await spendingControls.recomputeSpendingLimits(sampleCardholder)
+    expect(defaults).to.be.empty
+  })
+
   it('should return an update if the spend is equal to spend_limit', async () => {
     const modifiedSpendBalance = structuredClone(defaultSpendBalance)
     modifiedSpendBalance.spend = modifiedSpendBalance.spending_limit
     spendBalanceStub.returns(modifiedSpendBalance)
+    sandbox.stub(config, "get").withArgs('refill_amts').returns([75])
 
     const defaults = await spendingControls.recomputeSpendingLimits(sampleCardholder)
     expect(defaults.spending_controls).to.eql({
@@ -99,6 +106,7 @@ describe('recomputeSpendingLimits', async () => {
     const modifiedSpendBalance = structuredClone(defaultSpendBalance)
     modifiedSpendBalance.spend = modifiedSpendBalance.spending_limit * config.get('refill_trigger_percent')
     spendBalanceStub.returns(modifiedSpendBalance)
+    sandbox.stub(config, "get").withArgs('refill_amts').returns([75])
 
     const defaults = await spendingControls.recomputeSpendingLimits(sampleCardholder)
     expect(defaults.spending_controls).to.eql({
@@ -117,6 +125,7 @@ describe('recomputeSpendingLimits', async () => {
     const modifiedSpendBalance = structuredClone(defaultSpendBalance)
     modifiedSpendBalance.spend = modifiedSpendBalance.spending_limit + 75 // trigger the next refill
     spendBalanceStub.returns(modifiedSpendBalance)
+    sandbox.stub(config, "get").withArgs('refill_amts').returns([75,50])
 
     const defaults = await spendingControls.recomputeSpendingLimits(sampleCardholder)
     expect(defaults.spending_controls).to.eql({
