@@ -136,6 +136,37 @@ describe('sms utils', async () => {
 	    expect(msg).to.match(/ is over /i)
 	    expect(msg).to.match(/ balance /i)
 	  })
+
+    it('should return current balance in the msg', async () => {
+	  	const clonedAut = structuredClone(sampleAuthorization)
+	  	clonedAut.approved = false
+	  	clonedAut.request_history = [{
+	  		approved: false,
+	  		reason: 'authorization_controls'
+	  	}]
+
+		  const spendBalance = await spendingControls.getSpendBalanceTransactions(sampleCardholder, false)
+	    const msg = await sms.declinedMsg(clonedAut)
+	    expect(msg).to.match(/current balance/i)
+	    expect(msg).to.match(new RegExp(spendBalance.balance, 'i'))
+    })
+
+    it('should zero out the balance if it is negative', async () => {
+	  	const clonedAut = structuredClone(sampleAuthorization)
+	  	clonedAut.approved = false
+	  	clonedAut.request_history = [{
+	  		approved: false,
+	  		reason: 'authorization_controls'
+	  	}]
+
+		  const spendBalance = await spendingControls.getSpendBalanceTransactions(sampleCardholder, false)
+		  spendBalance.balance = -10
+			sandbox.stub(spendingControls, 'getSpendBalanceTransactions').returns(spendBalance)
+	    const msg = await sms.declinedMsg(clonedAut)
+	    expect(msg).to.match(/current balance/i)
+	    expect(msg).to.match(new RegExp(0, 'i'))
+    })
+
   })
 
   describe('sendDeclinedMsg', async () => {
@@ -173,6 +204,15 @@ describe('sms utils', async () => {
       const msg = await sms.currBalanceMsg(sampleCardholder)
 	    expect(msg).to.match(/current balance/i)
 	    expect(msg).to.match(new RegExp(spendBalance.balance, 'i'))
+    })
+
+    it('should zero out the balance if it is negative', async () => {
+		  const spendBalance = await spendingControls.getSpendBalanceTransactions(sampleCardholder, false)
+		  spendBalance.balance = -10
+			sandbox.stub(spendingControls, 'getSpendBalanceTransactions').returns(spendBalance)
+      const msg = await sms.currBalanceMsg(sampleCardholder)
+	    expect(msg).to.match(/current balance/i)
+	    expect(msg).to.match(new RegExp(0, 'i'))
     })
 
     it('should return spending limit in the msg', async () => {

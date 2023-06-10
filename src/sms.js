@@ -78,6 +78,8 @@ const declinedMsg = async (authorization) => {
     return false
   }
   const spendBalance = await spendingControls.getSpendBalanceTransactions(cardholder, false)
+  if (spendBalance.balance < 0) spendBalance.balance = 0
+
   let msg = config.get('sms_declined_msg')
   msg = msg.replace('DECLINED_MSG', subMsg)
   // Stripe stores it in pending_request IF it is going to the auth webhook, but once the auth has been
@@ -99,6 +101,8 @@ const sendDeclinedMsg = async (authorization, override = false) => {
 
 const currBalanceMsg = async (cardholder) => {
   const spendBalance = await spendingControls.getSpendBalanceTransactions(cardholder, false)
+  if (spendBalance.balance < 0) spendBalance.balance = 0
+
   let msg = config.get('sms_balance_msg')
   msg = msg.replaceAll('CURRENT_BALANCE', spendBalance.balance)
   msg = msg.replaceAll('SPEND_LIMIT', spendBalance.spending_limit)
