@@ -17,6 +17,15 @@ import { whTwilio } from './functions/whTwilio.js'
 logger.level = config.get('log_level')
 const shouldValidateTwilio = config.get('env') !== 'test'
 
+// const specificPathMiddleware = (req, res, next) => {
+//   const allowedPath = process.env.ALLOWED_PATH;
+//   if (req.path === allowedPath) {
+//     next(); // Allow access to the specific path
+//   } else {
+//     res.sendStatus(403); // Forbidden for other paths
+//   }
+// };
+
 const app = express()
 app.use(helmet())
 app.disable('x-powered-by')
@@ -29,6 +38,8 @@ app.use(bodyParser.json({
   }
 }))
 app.use(bodyParser.urlencoded({ extended: false }))
+
+// app.use(specificPathMiddleware);
 
 app.get('/igBalance', igBalance)
 app.post('/igUpdateCardholderSpendingRules', igUpdateCardholderSpendingRules)

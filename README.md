@@ -66,6 +66,9 @@ This creates and uses test data hosted by [Stripe in their test environment](htt
 
 ### Production
 
+* *FIXME:* this uses `gcloud functions`, which behind the scene, uses `gcloud run`.  Move over to use `gcloud run`
+* *FIXME:* for a static url, we use firebase hosting to setup a url such as `island-grown-balance.web.app`; need to programatically add this
+* *FIXME:* for moving to `gcloud run`, need to figure out how to have each path run separately, and with different authentication requirements.
 * *reset spending controls:* make changes in `config/app_configs.yml` and then run `yarn run resetCardholders -f`
 
 #### Hosting
