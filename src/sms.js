@@ -167,7 +167,7 @@ const isEnabled = (cardholder, override) => {
   // Stripe stores key/value pairs in metadata as strings
   if (cardholder.phone_number && cardholder.metadata.sms_enabled === 'true') return true
   if (cardholder.phone_number && override) return true
-  if (cardholder.phone_number === undefined) {
+  if (!cardholder.phone_number || cardholder.phone_number === undefined) {
     logger.info(`Cardholder ${cardholder.id} phone number is not set`)
     return false
   }

@@ -219,6 +219,12 @@ describe('sms utils', async () => {
 		    expect(sms.isEnabled(clonedCH)).to.be.false
 		  })
 
+		  it('should return false if phone number is undefined', async () => {
+		  	const clonedCH = structuredClone(sampleCardholder)
+		  	clonedCH.phone_number = undefined
+		    expect(sms.isEnabled(clonedCH)).to.be.false
+		  })
+
 		  it('should return false if phone number is empty', async () => {
 		  	const clonedCH = structuredClone(sampleCardholder)
 		  	clonedCH.phone_number = ''
