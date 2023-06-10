@@ -22,6 +22,7 @@ export const whTwilio = async (req, res) => {
     // TODO: can we prevent spaming?  return something to twilio to notify them to not allow frequent retries?
     return res.status(404).send('Not Found')
   }
+  logger.debug(`cardholder id: ${cardholder.id}`)
   const incomingMsg = ((typeof req.body.Body) === 'string' ) ? req.body.Body.toLowerCase().trim() : ''
   let responseMsg = ''
   switch (incomingMsg) {
