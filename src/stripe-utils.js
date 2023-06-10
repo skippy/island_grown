@@ -28,7 +28,7 @@ export const retrieveCardholderByPhone = async (val) => {
   }
   const cardholders = (await stripe.issuing.cardholders.list({ phone_number: phoneNumber.number, status: 'active' })).data
   if (cardholders.length > 1) {
-    logger.error(`multiple cardholders for phoneNumber ${phoneNumber}`)
+    logger.error(`multiple cardholders for phoneNumber ${phoneNumber.number}`)
     return null
   }
   return cardholders[0] || null
