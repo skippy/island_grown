@@ -34,6 +34,7 @@ export const whCardholderSetup = async (req, res) => {
     case 'issuing_card.updated':
       const issuingCard = event.data.object
       // Then define and call a function to handle the event issuing_card.updated
+      // remove the stripe defaults!
       logger.info('clearing card metadta and spending_controls')
       const resetData = spendingControls.clearSpendingControls()
       await stripeUtils.stripe.issuing.cards.update(issuingCard.id, resetData)
