@@ -64,7 +64,7 @@ export const whAuthorization = async (req, res) => {
     case 'issuing_authorization.created':
       //NOTE: This is triggered after the request, so if it is not approved, lets do somethin.
       logger.debug(issuingAuth)
-      logger.debug(issuingAuth.approved)
+      logger.debug(`approved: ${issuingAuth.approved}`)
       if (!issuingAuth.approved) {
         // this is an async response; but lets await for it so we make sure it
         // gets sent; if not, the http response returns super quick BUT the sms msg may not be
