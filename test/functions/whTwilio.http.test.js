@@ -79,6 +79,16 @@ describe('/POST whTwilio', () => {
       }
     })
 
+    it('should return current vendors', async () => {
+      const expectedMsg = await sms.vendorsMsg()
+      for await (const cmd of ['v', 'v', 'vendor', 'Vendor', 'ven', 'Ven', 'VEN']) {
+        const res = await chai.request(server)
+          .post('/whTwilio')
+          .send({ From: sampleCardholder.phone_number, Body: cmd })
+        expect(res.text).to.contain(expectedMsg)
+      }
+    })
+
     it('should persist that the cardholder is enabled when start is passed back', async () => {
       const expectedMsg = await sms.helpMsg()
       const smsStub = sandbox.stub(sms, 'persistEnabled')

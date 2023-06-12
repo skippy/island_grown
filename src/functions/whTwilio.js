@@ -47,6 +47,11 @@ export const whTwilio = async (req, res) => {
     case 'info':
       responseMsg = await sms.helpMsg()
       break
+    case 'v':
+    case 'vendor':
+    case 'ven':
+      responseMsg = await sms.vendorsMsg()
+      break
     case 'b':
     case 'balance':
     case 'bal':

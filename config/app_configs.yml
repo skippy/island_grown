@@ -78,6 +78,7 @@ sms_welcome_msg: >
 
   You can:
     - reply B or BALANCE to see your remaining balance
+    - reply V or VENDORS to see where you can use your card
     - reply H or HELP to see this message again.
     - reply STOP to unsubscribe
 
@@ -91,3 +92,39 @@ sms_stop_msg: >
   We'll stop sending you notifications, including about declined transactions.
 
   To start receiving notifications again, just reply with anything.
+sms_vendors_msg: >
+  Island Grown Card Vendors
+
+  San Juan Islands Food Hub: www.sjifh.com
+
+  Lopez Island
+   * Barn Owl Bakery
+   * Lopez Village Farm
+   * Stonecrest Farm
+   * Sunnyfield Farm
+   * Watmough Bay Farm
+
+  Orcas Island
+   * Buck Bay Shellfish Farm
+   * Girl Meets Dirt
+   * Lum Farm
+   * Morningstar Farm
+   * Orcas Co-Op
+   * Warm Valley Farm
+   * West Beach Farm
+   * Wise Owl Wellness Farm aka WOW Farm
+
+  San Juan Island
+   * Aurora Farm
+   * Kari's Island Elixirs
+   * Mama Bird Farm
+   * New Hannah Farm
+   * San Juan Co-Op
+   * San Juan Sea Salt
+   * Snowberry Farm
+   * Sweet Earth Farm
+
+  Waldron Island
+   * Nootka Rose Farm
+
+  reply STOP to unsubscribe

@@ -56,6 +56,10 @@ const sendWelcomeMsg = async (cardholder, override = false) => {
   return response
 }
 
+const vendorsMsg = () => {
+  return config.get('sms_vendors_msg')
+}
+
 const helpMsg = () => {
   return config.get('sms_help_msg')
 }
@@ -212,6 +216,7 @@ export const sms = {
   _sendTwilioMsg,
   // _twilioClient,
   welcomeMsg,
+  vendorsMsg,
   helpMsg,
   sendWelcomeMsg,
   stopMsg,

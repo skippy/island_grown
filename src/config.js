@@ -55,6 +55,10 @@ const config = convict({
     format: String,
     default: ''
   },
+  sms_vendors_msg: {
+    format: String,
+    default: ''
+  },
   sms_help_msg: {
     format: String,
     default: ''

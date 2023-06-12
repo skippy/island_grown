@@ -91,6 +91,15 @@ describe('sms utils', async () => {
 	  })
   })
 
+  describe('vendorsMsg', () => {
+	  it('should return the msg from configs', () => {
+	    const msg = sms.vendorsMsg()
+	    expect(msg).to.be.not.empty
+	    expect(msg).to.be.eql(config.get('sms_vendors_msg'))
+	  })
+  })
+
+
   describe('declinedMsg', async () => {
 	  it('should return false if the authorization was not declined', async () => {
 	  	const clonedAut = structuredClone(sampleAuthorization)
