@@ -22,6 +22,7 @@ export const igUpdateCardholderSpendingRules = async (req, res) => {
     }
 
     logger.debug('updating cardholder card data')
+    //stripe, by default, sets spending rules for new cards; clear these out
     for await (const c of stripeUtils.stripe.issuing.cards.list({ cardholder: cardholder.id })) {
       const resetData = spendingControls.clearSpendingControls()
       await stripeUtils.stripe.issuing.cards.update(c.id, resetData)
