@@ -59,7 +59,7 @@ export const whAuthorization = async (req, res) => {
         metadata: metadata
       })
       res.writeHead(200, { 'Stripe-Version': stripeUtils.stripeVersion, 'Content-Type': 'application/json' })
-      return res.end(body)
+      return res.status(200).end(body)
       break
     case 'issuing_authorization.created':
       //NOTE: This is triggered after the request, so if it is not approved, lets do somethin.
@@ -73,11 +73,11 @@ export const whAuthorization = async (req, res) => {
         // would delay the sending of the sms msg.
         await sms.sendDeclinedMsg(issuingAuth)
       }
-      return res.send()
+      return res.status(200).end()
       break
     default:
       logger.warn(`Unhandled event type ${event.type}`)
   }
   // Return a 200 response to acknowledge receipt of the event
-  res.send()
+  res.status(200).end()
 }
