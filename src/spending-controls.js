@@ -188,6 +188,11 @@ const constructListArgs = (cardholder) => {
       break
     case 'yearly':
     // get Jan 1st of current year, and return the unix timestamp
+      // const currentYear = new Date().getFullYear();
+      // listArgs.created = {
+      //   gte: new Date(`${currentYear}-01-01`),
+      //   lte: new Date(`${currentYear}-12-31`),
+      // }
       listArgs['created[gte]'] = new Date(new Date().getFullYear(), 0, 1).valueOf()/1000
       break
     case 'monthly':
