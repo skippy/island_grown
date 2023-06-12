@@ -27,6 +27,7 @@ export const whCardholderSetup = async (req, res) => {
     res.status(400).send(`Webhook Error: ${_.escape(err.message)}`)
     return
   }
+  logger.debug(`${event.type}: ${event.data.object.id}`)
 
   // Handle the event
   switch (event.type) {
