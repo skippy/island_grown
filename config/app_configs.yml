@@ -78,6 +78,7 @@ sms_help_msg: >
 sms_welcome_msg: >
   Welcome to your Island Grown Card!
 
+
   You can:
    * reply B or BALANCE to see your remaining balance
    * reply V or VENDORS to see where you can use your card
@@ -85,6 +86,7 @@ sms_welcome_msg: >
    * reply STOP to unsubscribe
 
   If your transaction is declined, you'll receive a message as to why.
+
 
   Thank you and enjoy your Island Grown Card!
 sms_stop_msg: >
@@ -94,11 +96,11 @@ sms_stop_msg: >
 
   To start receiving notifications again, just reply with anything.
 sms_vendors_msg: >
-  Island Grown Card Vendors
+  Island Grown Card Vendors:
 
 
-  San Juan Islands Food Hub
-    www.sjifh.com
+  * San Juan Islands Food Hub
+     www.sjifh.com
 
   Lopez Island
    * Barn Owl Bakery
