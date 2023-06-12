@@ -24,7 +24,7 @@ export const whTwilio = async (req, res) => {
   }
   logger.debug(`cardholder id: ${cardholder.id}`)
   const incomingMsg = ((typeof req.body.Body) === 'string' ) ? req.body.Body.toLowerCase().trim() : ''
-  let responseMsg = ''
+  let responseMsg
   switch (incomingMsg) {
     case 'stop':
     case 'cancel':
@@ -67,9 +67,12 @@ export const whTwilio = async (req, res) => {
     default:
       responseMsg = await sms.currBalanceMsg(cardholder)
   }
-  twiml.message(responseMsg)
-
-  res.writeHead(200, { 'Content-Type': 'text/xml' })
-  logger.debug(twiml.toString())
-  res.end(twiml.toString())
+  if(responseMsg){
+    twiml.message(responseMsg)
+    res.writeHead(200, { 'Content-Type': 'text/xml' })
+    logger.debug(twiml.toString())
+    res.end(twiml.toString())
+    return
+  }
+  res.status(200).end();
 }

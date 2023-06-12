@@ -69,13 +69,14 @@ describe('/POST whTwilio', () => {
       expect(res.text).to.contains(await sms.currBalanceMsg(sampleCardholder))
     })
 
-    it('should return current help', async () => {
+    it('should not return help', async () => {
+      //this is managed by twilio; if we do something we'll send a duplicate msg.
       const expectedMsg = await sms.helpMsg()
       for await (const cmd of ['h', 'H', 'help', 'Help', 'HELP', 'info', 'Info', 'INFO']) {
         const res = await chai.request(server)
           .post('/whTwilio')
           .send({ From: sampleCardholder.phone_number, Body: cmd })
-        expect(res.text).to.contain(expectedMsg)
+        expect(res.text).to.be.empty
       }
     })
 
@@ -100,7 +101,8 @@ describe('/POST whTwilio', () => {
         expect(smsStub.getCall(0).args).to.eql([sampleCardholder])
         smsStub.resetHistory()
         // no msg, as twilio has a default msg
-        expect(res.text).to.eql('<?xml version="1.0" encoding="UTF-8"?><Response><Message/></Response>')
+        expect(res.text).to.be.empty
+        // expect(res.text).to.eql('<?xml version="1.0" encoding="UTF-8"?><Response><Message/></Response>')
       }
     })
 
@@ -115,7 +117,8 @@ describe('/POST whTwilio', () => {
         expect(smsStub.getCall(0).args).to.eql([sampleCardholder])
         smsStub.resetHistory()
         // no msg, as twilio has a default msg
-        expect(res.text).to.eql('<?xml version="1.0" encoding="UTF-8"?><Response><Message/></Response>')
+        expect(res.text).to.be.empty
+        // expect(res.text).to.eql('<?xml version="1.0" encoding="UTF-8"?><Response><Message/></Response>')
       }
     })
   })
