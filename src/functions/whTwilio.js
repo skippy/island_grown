@@ -44,8 +44,16 @@ export const whTwilio = async (req, res) => {
       break
     case 'h':
     case 'help':
+    case 'hel':
     case 'info':
-      responseMsg = await sms.helpMsg()
+    case 'in':
+      // NOTE: this is addressed by twilio at: https://console.twilio.com/us1/service/sms/MG562218764d145186c07bec96731194d2/messaging-service-advanced-opt-out
+      // responseMsg = await sms.helpMsg()
+      break
+    case 'w':
+    case 'welcome':
+      // this path isn't advertised but it allows for us to trigger the welcome msg
+      responseMsg = await sms.welcomeMsg()
       break
     case 'v':
     case 'vendor':
