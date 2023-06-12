@@ -81,7 +81,7 @@ describe('/POST whTwilio', () => {
 
     it('should return current vendors', async () => {
       const expectedMsg = await sms.vendorsMsg()
-      for await (const cmd of ['v', 'v', 'vendor', 'Vendor', 'ven', 'Ven', 'VEN']) {
+      for await (const cmd of ['v', 'v', 'vendor', 'Vendor', 'VENDORS', 'vendors', 'ven', 'Ven', 'VEN']) {
         const res = await chai.request(server)
           .post('/whTwilio')
           .send({ From: sampleCardholder.phone_number, Body: cmd })

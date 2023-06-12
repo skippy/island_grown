@@ -49,6 +49,7 @@ export const whTwilio = async (req, res) => {
       break
     case 'v':
     case 'vendor':
+    case 'vendors':
     case 'ven':
       responseMsg = await sms.vendorsMsg()
       break
