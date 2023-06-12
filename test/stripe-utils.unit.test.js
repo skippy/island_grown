@@ -79,6 +79,28 @@ describe('stripe-utils', () => {
     })
   })
 
+  describe('retrieveCardholderID', () => {
+    it('should return null if no ich is sent', async () => {
+      const ch = await stripeUtils.retrieveCardholderID(null)
+      expect(ch).to.be.null
+    })
+
+    it('should return null if empty ich is sent', async () => {
+      const ch = await stripeUtils.retrieveCardholderID('   ')
+      expect(ch).to.be.null
+    })
+    it('should return null if no cardholder found with that ich', async () => {
+      const ch = await stripeUtils.retrieveCardholderID('ich_junk')
+      expect(ch).to.be.null
+    })
+    it('should return the matching cardholder', async () => {
+      const ch = await stripeUtils.retrieveCardholderID(sampleCardholder.id)
+      expect(ch).to.not.be.null
+      expect(ch.object).to.eql('issuing.cardholder')
+      expect(ch.id).to.eql(sampleCardholder.id)
+    })
+  })
+
   describe('retrieveCardholderByLast4Exp', () => {
     it('should return null if no args are passed in', async () => {
       let ch = await stripeUtils.retrieveCardholderByLast4Exp()

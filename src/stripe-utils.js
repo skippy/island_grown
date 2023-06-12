@@ -35,6 +35,21 @@ export const retrieveCardholderByPhone = async (val) => {
   return cardholders[0] || null
 }
 
+export const retrieveCardholderID = async (val) => {
+  if (val === undefined || val === null || val.trim() === '') return null
+  try {
+    const cardholder = (await stripe.issuing.cardholders.retrieve(val))
+    if (cardholder && cardholder.status !== 'active') {
+      logger.error(`cardholder is not active.  id: ${val}`)
+      return null
+    }
+    return cardholder
+  } catch (err) {
+    logger.error(`cardholder is not found.  id: ${val}`)
+    return null
+  }
+}
+
 export const retrieveCardholderByLast4Exp = async (last4, exp_month, exp_year) => {
   if (!last4 || !exp_month || !exp_year) return null
   const cards = (await stripe.issuing.cards.list({

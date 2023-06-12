@@ -2,12 +2,18 @@ import chai, { expect } from 'chai'
 import chaiHttp from 'chai-http'
 
 import server from '../../src/server.js'
+import * as stripeUtils from '../../src/stripe-utils.js'
 // import config from '../../src/config.js'
 
 const should = chai.should()
 chai.use(chaiHttp)
 
 describe('/GET igBalance', () => {
+  let sampleCardholder
+  before(async () => {
+    sampleCardholder = (await stripeUtils.stripe.issuing.cardholders.list({ email: global.setupOneTransactionCardholder })).data[0]
+  })
+
   const validVals = [
     { email: 'someone@nope.com' },
     { phone_number: '800 867-5309' },
@@ -15,7 +21,7 @@ describe('/GET igBalance', () => {
     { email: 'someone@nope.com', last4: 1234, exp_month: 12, exp_year: new Date().getFullYear() + 1 }
   ]
   validVals.forEach(validVal => {
-    it('should return a 200 for valid values', (done) => {
+    it(`should return a 200 for a valid ${Object.keys(validVal)[0]}`, (done) => {
       chai.request(server)
         .get('/igBalance')
         .query(validVal)
@@ -24,6 +30,16 @@ describe('/GET igBalance', () => {
           done()
         })
     })
+  })
+
+  it('should return a 200 for a valid ich', (done) => {
+    chai.request(server)
+      .get('/igBalance')
+      .query({ ich: sampleCardholder.id })
+      .end((err, res) => {
+        res.should.have.status(200)
+        done()
+      })
   })
 
   it('should return an empty authorizations and balance object if the cardholder has no transactions', async () => {

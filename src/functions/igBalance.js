@@ -23,6 +23,7 @@ export const igBalance = async (req, res) => {
     return res.status(400).send(errMsgs[0])
   }
   const cardholder = await stripeUtils.retrieveCardholderByEmail(req.query.email) ||
+                     await stripeUtils.retrieveCardholderID(req.query.ich) ||
                      await stripeUtils.retrieveCardholderByPhone(req.query.phone_number) ||
                      await stripeUtils.retrieveCardholderByLast4Exp(
                        req.query.last4,
@@ -34,7 +35,12 @@ export const igBalance = async (req, res) => {
   }
   const responseOutput = await spendingControls.getSpendBalanceTransactions(cardholder)
   addDeprecationNote(responseOutput)
-  res.json(responseOutput)
+  if(req.query.pretty){
+    res.status(200).send(JSON.stringify(responseOutput, null, 2))
+  }else{
+    res.status(200).json(responseOutput)
+  }
+  res.end()
 }
 
 // NOTE: for backwards compatability, we need to return it in this format
@@ -73,6 +79,13 @@ const verifyParams = async (req) => {
     .optional()
     .withMessage('last4 needs to be the last 4 digits of a credit card')
     .run(req)
+  await check('ich')
+    .custom(value => {
+      return /^ich_.{20,26}$/.test(value)
+    })
+    .optional()
+    .withMessage('ich should start with ich_')
+    .run(req)
   await check('exp_month')
     .toInt()
     .custom(value => {
@@ -95,8 +108,8 @@ const verifyParams = async (req) => {
   if (!errors.isEmpty()) {
     errMsgs.push(...errors.array().map(e => e.msg))
   } else if (Object.keys(req.query).length === 0) {
-    errMsgs.push('email, phone_number, or the last4, exp_month, and exp_year of the credit card are expected')
-  } else if (req.query.email === undefined && req.query.phone_number === undefined) {
+    errMsgs.push('email, phone_number, ich, or the last4, exp_month, and exp_year of the credit card are expected')
+  } else if (req.query.email === undefined && req.query.phone_number === undefined && req.query.ich === undefined) {
     if (req.query.last4 === undefined ||
         req.query.exp_month === undefined ||
         req.query.exp_year === undefined) {
