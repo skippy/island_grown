@@ -35,7 +35,7 @@ export const whAuthorization = async (req, res) => {
       const merchantName = _.escape(merchantData.name).toLowerCase()
       const vendors = config.get('approved_vendors')
       const approvedPostalCodes = config.get('approved_postal_codes')
-      const foundVendor = Object.keys(vendors).find(vn => merchantName.includes(vn.toLowerCase()))
+      const foundVendor = Object.keys(vendors).find(vn => merchantName.match(new RegExp(vn, 'i')) !== null)
       let vendorVerified = foundVendor ? vendors[foundVendor].toString() === merchantData.postal_code.toString() : false
       logger.debug(`found vendor? ${foundVendor || false} -- verified vendor? ${vendorVerified || false}`)
       logger.info(`auth approved? ${vendorVerified}: ${issuingAuth.id}`)

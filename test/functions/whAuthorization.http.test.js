@@ -6,6 +6,7 @@ import server from '../../src/server.js'
 import * as stripeUtils from '../../src/stripe-utils.js'
 import config from '../../src/config.js'
 import sms from '../../src/sms.js'
+import _ from 'lodash'
 
 chai.use(chaiHttp)
 const should = chai.should()
@@ -28,12 +29,108 @@ describe('/POST whAuthorization', () => {
   })
 
   describe('for issuing_authorization.request', () => {
+    let origVendorConfigs
+    // before(async () => {
+    //   origVendorConfigs = config.get('approved_vendors')
+    // })
     beforeEach(() => {
+      // sandbox.stub(config, 'get').withArgs('approved_vendors').returns(origVendorConfigs)
+      origVendorConfigs = _.cloneDeep(config.get('approved_vendors'))
       constructEventStub.returns({
         type: 'issuing_authorization.request',
         data: {
           object: sampleAuthorization
         }
+      })
+    })
+
+    afterEach(() => {
+      config.set('approved_vendors', origVendorConfigs)
+    })
+
+    describe('matching multiple variations of a vendor name', () => {
+      it('should match a regular string', async() => {
+        let vendors = config.get('approved_vendors')
+        vendors['My Vendor'] = sampleAuthorization.merchant_data.postal_code
+        config.set('approved_vendors', vendors)
+        sampleAuthorization.merchant_data.name = 'My Vendor'
+
+        const res = await chai.request(server)
+          .post('/whAuthorization')
+        res.should.have.status(200)
+
+        expect(res.body.approved).to.be.true
+        expect(res.body.metadata.vendor_found).to.equal('My Vendor')
+      })
+
+      it('should match a mismatched case string', async() => {
+        let vendors = config.get('approved_vendors')
+        vendors['My Vendor'] = sampleAuthorization.merchant_data.postal_code
+        config.set('approved_vendors', vendors)
+        sampleAuthorization.merchant_data.name = 'my vendor'
+
+        const res = await chai.request(server)
+          .post('/whAuthorization')
+        res.should.have.status(200)
+
+        expect(res.body.approved).to.be.true
+        expect(res.body.metadata.vendor_found).to.equal('My Vendor')
+      })
+
+      it('should match a partial name match', async() => {
+        let vendors = config.get('approved_vendors')
+        vendors['Vendor2'] = sampleAuthorization.merchant_data.postal_code
+        config.set('approved_vendors', vendors)
+        sampleAuthorization.merchant_data.name = 'My Vendor2'
+
+        const res = await chai.request(server)
+          .post('/whAuthorization')
+        res.should.have.status(200)
+
+        expect(res.body.approved).to.be.true
+        expect(res.body.metadata.vendor_found).to.equal('Vendor2')
+      })
+
+      it('should match a partial name match that is case insensitive', async() => {
+        let vendors = config.get('approved_vendors')
+        vendors['Vendor2'] = sampleAuthorization.merchant_data.postal_code
+        config.set('approved_vendors', vendors)
+        sampleAuthorization.merchant_data.name = 'my vendor2'
+
+        const res = await chai.request(server)
+          .post('/whAuthorization')
+        res.should.have.status(200)
+
+        expect(res.body.approved).to.be.true
+        expect(res.body.metadata.vendor_found).to.equal('Vendor2')
+      })
+
+      it('should match a vendor name with a space regexp', async() => {
+        let vendors = config.get('approved_vendors')
+        vendors['my\\s*vendor'] = sampleAuthorization.merchant_data.postal_code
+        config.set('approved_vendors', vendors)
+        sampleAuthorization.merchant_data.name = 'my vendor'
+
+        const res = await chai.request(server)
+          .post('/whAuthorization')
+        res.should.have.status(200)
+
+        expect(res.body.approved).to.be.true
+        expect(res.body.metadata.vendor_found).to.equal('my\\s*vendor')
+      })
+
+      it('should match a partial vendor name with a regexp', async() => {
+        let vendors = config.get('approved_vendors')
+        vendors['my\\s+vendor'] = sampleAuthorization.merchant_data.postal_code
+        config.set('approved_vendors', vendors)
+        sampleAuthorization.merchant_data.name = 'my vendor lucky'
+
+        const res = await chai.request(server)
+          .post('/whAuthorization')
+        res.should.have.status(200)
+
+        expect(res.body.approved).to.be.true
+        expect(res.body.metadata.vendor_found).to.equal('my\\s+vendor')
       })
     })
 
