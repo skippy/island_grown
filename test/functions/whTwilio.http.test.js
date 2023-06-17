@@ -62,11 +62,11 @@ describe('/POST whTwilio', () => {
       }
     })
 
-    it('should default to returning balance if unexpected cmd is entered', async () => {
+    it('should default to returning help if unexpected cmd is entered', async () => {
       const res = await chai.request(server)
         .post('/whTwilio')
         .send({ From: sampleCardholder.phone_number, Body: 'unkown command' })
-      expect(res.text).to.contains(await sms.currBalanceMsg(sampleCardholder))
+      expect(res.text).to.contains(await sms.helpMsg())
     })
 
     it('should not return help', async () => {

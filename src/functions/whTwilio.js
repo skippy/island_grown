@@ -64,8 +64,10 @@ export const whTwilio = async (req, res) => {
     case 'b':
     case 'balance':
     case 'bal':
-    default:
       responseMsg = await sms.currBalanceMsg(cardholder)
+      break
+    default:
+      responseMsg = await sms.helpMsg()
   }
   if(responseMsg){
     twiml.message(responseMsg)
