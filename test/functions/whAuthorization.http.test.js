@@ -54,6 +54,19 @@ describe('/POST whAuthorization', () => {
       expect(res.body.metadata.merchant_postal_code).to.not.be.empty
     })
 
+    it('should return an unapproved code AND an empty postal_code if the postal_code is not set', async () => {
+      //NOTE: stripe can't receive null values in the metadata;
+      // if it does it will fail serverside with odd behavior
+      // NOTE2: this can happen with certain vendors such as online vendors like Blizzard
+      sampleAuthorization.merchant_data.postal_code = null
+      const res = await chai.request(server)
+        .post('/whAuthorization')
+      res.should.have.status(200)
+      expect(res.body.approved).to.be.false
+      expect(res.body.metadata.vendor_found).to.be.false
+      expect(res.body.metadata.merchant_postal_code).to.equal('')
+    })
+
     it('should return an unapproved code, with a reason, if the vendor name is found BUT the matching postal code is not', async () => {
       const vendors = config.get('approved_vendors')
       const validVendorName = Object.keys(vendors)[0]
