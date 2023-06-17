@@ -42,7 +42,9 @@ export const whAuthorization = async (req, res) => {
       const metadata = {
           vendor_found: foundVendor || false,
           vendor_postal_code: vendors[foundVendor] || false,
-          merchant_postal_code: merchantData.postal_code
+          //NOTE: stripe can't allow null to be passed in the metadata, otherwise the
+          //  transaction will fail on stripe
+          merchant_postal_code: merchantData.postal_code || ''
       }
       //TODO: review this logic; if the vendor postal code does not match, do we:
       //  1) look at the approved postal list
