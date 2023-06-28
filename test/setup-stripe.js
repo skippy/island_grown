@@ -55,6 +55,16 @@ const setupNoTransactionsCardholder = async () => {
 	  type: 'individual',
 	  metadata: spendingControls.defaultMetadata(),
 	  spending_controls: spendingControls.defaultSpendingControls(),
+	  individual:{
+	  	first_name: 'Jenny',
+	  	last_name: 'Rosen',
+	  	card_issuing: {
+	  		user_terms_acceptance: {
+	  			date: Math.floor(new Date().getTime()/1000),
+	  			ip: '127.0.0.1'
+	  		}
+	  	}
+	  },
 	  billing: {
 	    address: {
 	      line1: '123 Main Street',
@@ -95,6 +105,16 @@ const setupOneTransactionWithRefundCardholder = async () => {
 	  type: 'individual',
 	  metadata: spendingControls.defaultMetadata(),
 	  spending_controls: spendingControls.defaultSpendingControls(),
+	  individual:{
+	  	first_name: 'Jenny',
+	  	last_name: 'Rosen',
+	  	card_issuing: {
+	  		user_terms_acceptance: {
+	  			date: Math.floor(new Date().getTime()/1000),
+	  			ip: '127.0.0.1'
+	  		}
+	  	}
+	  },
 	  billing: {
 	    address: {
 	      line1: '123 Main Street',
@@ -174,6 +194,16 @@ const setupOneTransactionCardholder = async () => {
 	  type: 'individual',
 	  metadata: spendingControls.defaultMetadata(),
 	  spending_controls: spendingControls.defaultSpendingControls(),
+	  individual:{
+	  	first_name: 'Jenny',
+	  	last_name: 'Rosen',
+	  	card_issuing: {
+	  		user_terms_acceptance: {
+	  			date: Math.floor(new Date().getTime()/1000),
+	  			ip: '127.0.0.1'
+	  		}
+	  	}
+	  },
 	  billing: {
 	    address: {
 	      line1: '123 Main Street',
@@ -269,6 +299,16 @@ const setupOneTransactionAndPendingCardholder = async () => {
 	  type: 'individual',
 	  metadata: spendingControls.defaultMetadata(),
 	  spending_controls: spendingControls.defaultSpendingControls(),
+	  individual:{
+	  	first_name: 'Jenny',
+	  	last_name: 'Rosen',
+	  	card_issuing: {
+	  		user_terms_acceptance: {
+	  			date: Math.floor(new Date().getTime()/1000),
+	  			ip: '127.0.0.1'
+	  		}
+	  	}
+	  },
 	  billing: {
 	    address: {
 	      line1: '123 Main Street',
