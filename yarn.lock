@@ -57,13 +57,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@google-cloud/functions-framework@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@google-cloud/functions-framework@npm:3.2.0"
+"@google-cloud/functions-framework@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "@google-cloud/functions-framework@npm:3.2.1"
   dependencies:
     "@types/express": 4.17.17
     body-parser: ^1.18.3
-    cloudevents: ^6.0.0
+    cloudevents: ^7.0.0
     express: ^4.16.4
     minimist: ^1.2.7
     on-finished: ^2.3.0
@@ -72,7 +72,7 @@ __metadata:
   bin:
     functions-framework: build/src/main.js
     functions-framework-nodejs: build/src/main.js
-  checksum: 26b318a17ec5d9e99e4512ab0b73474f8e588680c59164bb6eb7f879e6a8913f742cea623f7d0799f6d6fb511310b484ad1529a1bb712cf5a008b162a300155b
+  checksum: e0c89314385bb4cf6ab880193f10511f602dd0a8d3e72effbe080588a616de61a73bbd8d0e023697c60e470575715411d1aeba1c67d6ed965c08df1ace24f9ff
   languageName: node
   linkType: hard
 
@@ -483,6 +483,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bignumber.js@npm:^9.0.0":
+  version: 9.1.1
+  resolution: "bignumber.js@npm:9.1.1"
+  checksum: ad243b7e2f9120b112d670bb3d674128f0bd2ca1745b0a6c9df0433bd2c0252c43e6315d944c2ac07b4c639e7496b425e46842773cf89c6a2dcd4f31e5c4b11e
+  languageName: node
+  linkType: hard
+
 "binary-extensions@npm:^2.0.0":
   version: 2.2.0
   resolution: "binary-extensions@npm:2.2.0"
@@ -743,15 +750,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cloudevents@npm:^6.0.0":
-  version: 6.0.3
-  resolution: "cloudevents@npm:6.0.3"
+"cloudevents@npm:^7.0.0":
+  version: 7.0.1
+  resolution: "cloudevents@npm:7.0.1"
   dependencies:
     ajv: ^8.11.0
     ajv-formats: ^2.1.1
+    json-bigint: ^1.0.0
+    process: ^0.11.10
     util: ^0.12.4
     uuid: ^8.3.2
-  checksum: ff3c1b86b8c19d02c49237d8c23e4586a4fb55ba76f25b027903656fe561201a86de407e86ad5b9928539feb65b5d4ca3f4e54da060d8701983ed2cf71688ba0
+  checksum: 5394a4fd61e5cb160a9b3561742ea7dda3dedb9b9664ed035dc2981dcfcb89a78fddde3f80d67b98152837a7d545ffdd25157cf828c5f21cf997f3853d626684
   languageName: node
   linkType: hard
 
@@ -1827,7 +1836,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "island_grown_card@workspace:."
   dependencies:
-    "@google-cloud/functions-framework": ^3.2.0
+    "@google-cloud/functions-framework": ^3.2.1
     body-parser: ^1.20.2
     chai: ^4.3.7
     chai-http: ^4.4.0
@@ -1865,6 +1874,15 @@ __metadata:
   bin:
     js-yaml: bin/js-yaml.js
   checksum: c7830dfd456c3ef2c6e355cc5a92e6700ceafa1d14bba54497b34a99f0376cecbb3e9ac14d3e5849b426d5a5140709a66237a8c991c675431271c4ce5504151a
+  languageName: node
+  linkType: hard
+
+"json-bigint@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "json-bigint@npm:1.0.0"
+  dependencies:
+    bignumber.js: ^9.0.0
+  checksum: c67bb93ccb3c291e60eb4b62931403e378906aab113ec1c2a8dd0f9a7f065ad6fd9713d627b732abefae2e244ac9ce1721c7a3142b2979532f12b258634ce6f6
   languageName: node
   linkType: hard
 
@@ -2528,6 +2546,13 @@ __metadata:
   version: 2.3.1
   resolution: "picomatch@npm:2.3.1"
   checksum: 050c865ce81119c4822c45d3c84f1ced46f93a0126febae20737bd05ca20589c564d6e9226977df859ed5e03dc73f02584a2b0faad36e896936238238b0446cf
+  languageName: node
+  linkType: hard
+
+"process@npm:^0.11.10":
+  version: 0.11.10
+  resolution: "process@npm:0.11.10"
+  checksum: bfcce49814f7d172a6e6a14d5fa3ac92cc3d0c3b9feb1279774708a719e19acd673995226351a082a9ae99978254e320ccda4240ddc474ba31a76c79491ca7c3
   languageName: node
   linkType: hard
 
