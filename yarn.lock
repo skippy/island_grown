@@ -57,9 +57,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@google-cloud/functions-framework@npm:^3.2.1":
-  version: 3.2.1
-  resolution: "@google-cloud/functions-framework@npm:3.2.1"
+"@google-cloud/functions-framework@npm:^3.3.0":
+  version: 3.3.0
+  resolution: "@google-cloud/functions-framework@npm:3.3.0"
   dependencies:
     "@types/express": 4.17.17
     body-parser: ^1.18.3
@@ -72,7 +72,7 @@ __metadata:
   bin:
     functions-framework: build/src/main.js
     functions-framework-nodejs: build/src/main.js
-  checksum: e0c89314385bb4cf6ab880193f10511f602dd0a8d3e72effbe080588a616de61a73bbd8d0e023697c60e470575715411d1aeba1c67d6ed965c08df1ace24f9ff
+  checksum: aa3bb5121fe5028249a604c09dd8433cea7e6d0e79577c8bc020a39cefee7b59fd1c5ce08faac5e8a33a2be04f8f9f8902450fe60d1590f08587b72c45d25854
   languageName: node
   linkType: hard
 
@@ -1836,7 +1836,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "island_grown_card@workspace:."
   dependencies:
-    "@google-cloud/functions-framework": ^3.2.1
+    "@google-cloud/functions-framework": ^3.3.0
     body-parser: ^1.20.2
     chai: ^4.3.7
     chai-http: ^4.4.0
