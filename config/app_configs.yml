@@ -24,11 +24,10 @@ approved_vendors:
   "LOPEZ VILLAGE FARM": 98261
   "LUM FARM": 98245
   "MAMA BIRD": 98250
+  "MIDNIGHT'S FARM": 98261
   "MORNING STAR": 98280
   "NOOTKA\\s*ROSE": 98245
-  "NORTH BEACH MUSHROOMS": 98245
   "NORTH STAR FARM": 98261
-  "ROCHE HARBOR FARM": 98250
   "STONECREST FARM": 98261
   # "SUNNYFIELD FARM": 98261
   "SUNNYFIELD FAR": 10014   # there venmo version; if the zip doesn't match, it will match the approved postal codes
@@ -102,6 +101,7 @@ sms_vendors_msg: >
   Lopez Island
    * Barn Owl Bakery
    * Lopez Village Farm
+   * Midnight's Farm
    * North Star Farm
    * Stonecrest Farm
    * Sunnyfield Farm
