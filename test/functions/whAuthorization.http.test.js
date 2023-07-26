@@ -91,6 +91,20 @@ describe('/POST whAuthorization', () => {
         expect(res.body.metadata.vendor_found).to.equal('Vendor2')
       })
 
+      it('should match a partial name match with * characters in the name which are not a part of a regex', async() => {
+        let vendors = config.get('approved_vendors')
+        vendors['Vendor2'] = sampleAuthorization.merchant_data.postal_code
+        config.set('approved_vendors', vendors)
+        sampleAuthorization.merchant_data.name = 'FSP*My Vendor2*d'
+
+        const res = await chai.request(server)
+          .post('/whAuthorization')
+        res.should.have.status(200)
+
+        expect(res.body.approved).to.be.true
+        expect(res.body.metadata.vendor_found).to.equal('Vendor2')
+      })
+
       it('should match a partial name match that is case insensitive', async() => {
         let vendors = config.get('approved_vendors')
         vendors['Vendor2'] = sampleAuthorization.merchant_data.postal_code
