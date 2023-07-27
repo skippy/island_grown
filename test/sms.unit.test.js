@@ -205,6 +205,13 @@ describe('sms utils', async () => {
 	    expect(twilioMsgsStub.getCall(0).args[0]).to.eql(clonedAut.card.cardholder.phone_number)
 	    expect(twilioMsgsStub.getCall(0).args[1]).to.not.be.empty
     })
+
+    it('does not send if declinedMsg returns false', async () => {
+      sandbox.stub(sms, 'isEnabled').returns(true)
+      sandbox.stub(sms, 'declinedMsg').returns(false)
+      await sms.sendDeclinedMsg(clonedAut)
+	    expect(twilioMsgsStub.calledOnce).to.be.false
+    })
   })
 
   describe('currBalanceMsg', async () => {

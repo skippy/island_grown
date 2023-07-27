@@ -78,6 +78,7 @@ const declinedMsg = async (authorization) => {
            authorization.request_history[0].reason == 'authorization_controls') {
     subMsg = config.get('sms_declined_over_balance_submsg')
   } else {
+    // most likely; the card is not foun
     logger.error(`unexpected declined authorization ${authorization.id}`)
     return false
   }
@@ -100,7 +101,9 @@ const sendDeclinedMsg = async (authorization, override = false) => {
   if (!sms.isEnabled(cardholder, override)) return false
 
   const msg = await sms.declinedMsg(authorization)
-  return await sms._sendTwilioMsg(cardholder.phone_number, msg)
+  if(msg){
+    return await sms._sendTwilioMsg(cardholder.phone_number, msg)
+  }
 }
 
 const currBalanceMsg = async (cardholder) => {
