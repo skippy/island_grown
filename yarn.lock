@@ -1848,7 +1848,7 @@ __metadata:
     express-validator: ^7.0.1
     helmet: ^7.0.0
     js-yaml: ^4.1.0
-    libphonenumber-js: ^1.10.37
+    libphonenumber-js: ^1.10.38
     lodash: ^4.17.21
     mocha: ^10.2.0
     sinon: ^15.2.0
@@ -1947,10 +1947,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libphonenumber-js@npm:^1.10.37":
-  version: 1.10.37
-  resolution: "libphonenumber-js@npm:1.10.37"
-  checksum: c28f7623226d6ab33c48044f12e772d35dfdbebae53e89434840f64da92e92736fa547a47b48d99050f225d921df71d9827848f78d6c62a063dec4c44dad1b1b
+"libphonenumber-js@npm:^1.10.38":
+  version: 1.10.38
+  resolution: "libphonenumber-js@npm:1.10.38"
+  checksum: dc7adb8e081d525b4ef7589aea97a8f620eafa5a5d8a64987f696e20262e8bd40bd91ff3282cf5798148ebfcd158fd55cdcb377328438f05513e5430fe9605a1
   languageName: node
   linkType: hard
 
