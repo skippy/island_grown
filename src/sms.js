@@ -71,14 +71,15 @@ const declinedMsg = async (authorization) => {
     logger.error(`authorization ${authorization.id} was not declined.`)
     return false
   }
-
-  if (authorization.metadata.vendor_found == 'false' || authorization.metadata.vendor_postal_code == 'false') {
+  if(authorization.card.status != 'active'){
+    subMsg = config.get('sms_declined_card_not_active_submsg')
+  } else if (authorization.metadata.vendor_found == 'false' || authorization.metadata.vendor_postal_code == 'false') {
     subMsg = config.get('sms_declined_vendor_not_found_submsg')
   } else if (!authorization.request_history[0].approved &&
-           authorization.request_history[0].reason == 'authorization_controls') {
+    authorization.request_history[0].reason == 'authorization_controls') {
     subMsg = config.get('sms_declined_over_balance_submsg')
   } else {
-    // most likely; the card is not foun
+    // most likely; the card is not found
     logger.error(`unexpected declined authorization ${authorization.id}`)
     return false
   }

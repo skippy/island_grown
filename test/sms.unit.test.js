@@ -101,69 +101,79 @@ describe('sms utils', async () => {
 
 
   describe('declinedMsg', async () => {
+
 	  it('should return false if the authorization was not declined', async () => {
-	  	const clonedAut = structuredClone(sampleAuthorization)
-	  	clonedAut.approved = true
-	    const msg = await sms.declinedMsg(clonedAut)
+	  	const clonedAuth = structuredClone(sampleAuthorization)
+	  	clonedAuth.approved = true
+	    const msg = await sms.declinedMsg(clonedAuth)
 	    expect(msg).to.be.false
 	  })
 
 	  it('should return false if the authorization was declined for unknown reason', async () => {
-	  	const clonedAut = structuredClone(sampleAuthorization)
-	  	clonedAut.approved = false
-	  	clonedAut.request_history = [{
+	  	const clonedAuth = structuredClone(sampleAuthorization)
+	  	clonedAuth.approved = false
+	  	clonedAuth.request_history = [{
 	  		approved: false,
 	  		reason: 'unknown_reason'
 	  	}]
-	    const msg = await sms.declinedMsg(clonedAut)
+	    const msg = await sms.declinedMsg(clonedAuth)
 	    expect(msg).to.be.false
 	  })
 
-	  it('should return unauthorized vendor msg if the vendor_found or vendor_postal_code are false', async () => {
-	  	const clonedAut = structuredClone(sampleAuthorization)
-	  	clonedAut.approved = false
-	  	// stripe stores everything in metadata key/value pair as a string
-	  	clonedAut.metadata.vendor_found = 'false'
-	  	clonedAut.metadata.vendor_postal_code = 'false'
+  	it('should return card not active msg if the card is inactive', async () => {
+	  	const clonedAuth = structuredClone(sampleAuthorization)
+	  	clonedAuth.approved = false
+	  	clonedAuth.card.status = 'inactive'
+	    const msg = await sms.declinedMsg(clonedAuth)
+	    expect(msg).to.not.be.empty
+	    expect(msg).to.match(/Your Card is not activate/i)
+  	})
 
-	    const msg = await sms.declinedMsg(clonedAut)
+	  it('should return unauthorized vendor msg if the vendor_found or vendor_postal_code are false', async () => {
+	  	const clonedAuth = structuredClone(sampleAuthorization)
+	  	clonedAuth.approved = false
+	  	// stripe stores everything in metadata key/value pair as a string
+	  	clonedAuth.metadata.vendor_found = 'false'
+	  	clonedAuth.metadata.vendor_postal_code = 'false'
+
+	    const msg = await sms.declinedMsg(clonedAuth)
 	    expect(msg).to.not.be.empty
 	    expect(msg).to.match(/ not a verified /i)
 	    expect(msg).to.match(/ vendor/i)
 	  })
 
 	  it('should return over balance msg if the authorization was not approved by stripe for authorization_controls', async () => {
-	  	const clonedAut = structuredClone(sampleAuthorization)
-	  	clonedAut.approved = false
-	  	clonedAut.request_history = [{
+	  	const clonedAuth = structuredClone(sampleAuthorization)
+	  	clonedAuth.approved = false
+	  	clonedAuth.request_history = [{
 	  		approved: false,
 	  		reason: 'authorization_controls'
 	  	}]
 
-	    const msg = await sms.declinedMsg(clonedAut)
+	    const msg = await sms.declinedMsg(clonedAuth)
 	    expect(msg).to.not.be.empty
 	    expect(msg).to.match(/ is over /i)
 	    expect(msg).to.match(/ balance /i)
 	  })
 
     it('should return current balance in the msg', async () => {
-	  	const clonedAut = structuredClone(sampleAuthorization)
-	  	clonedAut.approved = false
-	  	clonedAut.request_history = [{
+	  	const clonedAuth = structuredClone(sampleAuthorization)
+	  	clonedAuth.approved = false
+	  	clonedAuth.request_history = [{
 	  		approved: false,
 	  		reason: 'authorization_controls'
 	  	}]
 
 		  const spendBalance = await spendingControls.getSpendBalanceTransactions(sampleCardholder, false)
-	    const msg = await sms.declinedMsg(clonedAut)
+	    const msg = await sms.declinedMsg(clonedAuth)
 	    expect(msg).to.match(/current balance/i)
 	    expect(msg).to.match(new RegExp(spendBalance.balance, 'i'))
     })
 
     it('should zero out the balance if it is negative', async () => {
-	  	const clonedAut = structuredClone(sampleAuthorization)
-	  	clonedAut.approved = false
-	  	clonedAut.request_history = [{
+	  	const clonedAuth = structuredClone(sampleAuthorization)
+	  	clonedAuth.approved = false
+	  	clonedAuth.request_history = [{
 	  		approved: false,
 	  		reason: 'authorization_controls'
 	  	}]
@@ -171,7 +181,7 @@ describe('sms utils', async () => {
 		  const spendBalance = await spendingControls.getSpendBalanceTransactions(sampleCardholder, false)
 		  spendBalance.balance = -10
 			sandbox.stub(spendingControls, 'getSpendBalanceTransactions').returns(spendBalance)
-	    const msg = await sms.declinedMsg(clonedAut)
+	    const msg = await sms.declinedMsg(clonedAuth)
 	    expect(msg).to.match(/current balance/i)
 	    expect(msg).to.match(new RegExp(0, 'i'))
     })
@@ -179,37 +189,37 @@ describe('sms utils', async () => {
   })
 
   describe('sendDeclinedMsg', async () => {
-    let clonedAut
+    let clonedAuth
     // let twilioMsgsStub
     beforeEach(() => {
       // make sure it is enabled to send
 	    // twilioMsgsStub = sandbox.stub(sms._twilioClient.messages, 'create').returns({})
-	  	clonedAut = structuredClone(sampleAuthorization)
-	  	clonedAut.approved = false
+	  	clonedAuth = structuredClone(sampleAuthorization)
+	  	clonedAuth.approved = false
 	  	// stripe stores everything in metadata key/value pair as a string
-	  	clonedAut.metadata.vendor_found = 'false'
-	  	clonedAut.metadata.vendor_postal_code = 'false'
+	  	clonedAuth.metadata.vendor_found = 'false'
+	  	clonedAuth.metadata.vendor_postal_code = 'false'
     })
 
     it('does not send if isEnabled returns false', async () => {
       sandbox.stub(sms, 'isEnabled').returns(false)
-      await sms.sendDeclinedMsg(clonedAut)
+      await sms.sendDeclinedMsg(clonedAuth)
 	    expect(twilioMsgsStub.calledOnce).to.be.false
     })
 
     it('does send if isEnabled returns true', async () => {
       sandbox.stub(sms, 'isEnabled').returns(true)
-      await sms.sendDeclinedMsg(clonedAut)
+      await sms.sendDeclinedMsg(clonedAuth)
 	    expect(twilioMsgsStub.calledOnce).to.be.true
 	    expect(twilioMsgsStub.getCall(0).args.length).to.be.eql(2)
-	    expect(twilioMsgsStub.getCall(0).args[0]).to.eql(clonedAut.card.cardholder.phone_number)
+	    expect(twilioMsgsStub.getCall(0).args[0]).to.eql(clonedAuth.card.cardholder.phone_number)
 	    expect(twilioMsgsStub.getCall(0).args[1]).to.not.be.empty
     })
 
     it('does not send if declinedMsg returns false', async () => {
       sandbox.stub(sms, 'isEnabled').returns(true)
       sandbox.stub(sms, 'declinedMsg').returns(false)
-      await sms.sendDeclinedMsg(clonedAut)
+      await sms.sendDeclinedMsg(clonedAuth)
 	    expect(twilioMsgsStub.calledOnce).to.be.false
     })
   })

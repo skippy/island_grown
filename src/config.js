@@ -71,6 +71,10 @@ const config = convict({
     format: String,
     default: ''
   },
+  sms_declined_card_not_active_submsg: {
+    format: String,
+    default: ''
+  },
   sms_declined_over_balance_submsg: {
     format: String,
     default: ''
