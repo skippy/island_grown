@@ -29,8 +29,8 @@ approved_vendors:
   "NOOTKA\\s*ROSE": 98245
   "NORTH STAR FARM": 98261
   "STONECREST FARM": 98261
-  # "SUNNYFIELD FARM": 98261
-  "SUNNYFIELD FAR": 10014   # there venmo version; if the zip doesn't match, it will match the approved postal codes
+  "SUNNYFIELD FARM": 98261
+  "SUNNYFIELD FAR": 10014   # their venmo version; if the zip doesn't match, it will match the approved postal codes
   "URSA MINOR": 98261
   "WATMOUGH BAY FARM": 98261
   "WEST\\s*BEACH": 98245
@@ -43,6 +43,7 @@ approved_vendors:
   "GIRL MEETS DIRT": 98250
   "SAN JUAN ISLAND SE": 98250
   "SANJUANSEASALT": 98250
+  "SWEET EARTH FA": 10014   # their venmo version; if the zip doesn't match, it will match the approved postal codes # ve
 
 sms_declined_vendor_not_found_submsg: >
   'VENDOR_NAME' is not a verified Island Grown Card vendor.
