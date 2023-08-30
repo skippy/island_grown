@@ -25,6 +25,7 @@ approved_vendors:
   "LUM FARM": 98245
   "MAMA BIRD": 98250
   "MIDNIGHT'S FARM": 98261
+  "VENMO *MIDNIGHT FARM": 10014
   "MORNING STAR": 98280
   "NOOTKA\\s*ROSE": 98245
   "NORTH STAR FARM": 98261
@@ -43,7 +44,7 @@ approved_vendors:
   "GIRL MEETS DIRT": 98250
   "SAN JUAN ISLAND SE": 98250
   "SANJUANSEASALT": 98250
-  "SWEET EARTH FA": 10014   # their venmo version; if the zip doesn't match, it will match the approved postal codes # ve
+  "VENMO *SWEET EARTH FA": 10014   # their venmo version; if the zip doesn't match, it will match the approved postal codes # ve
 
 sms_declined_vendor_not_found_submsg: >
   'VENDOR_NAME' is not a verified Island Grown Card vendor.
