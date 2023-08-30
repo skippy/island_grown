@@ -1853,7 +1853,7 @@ __metadata:
     mocha: ^10.2.0
     sinon: ^15.2.0
     stripe: ^12.18.0
-    twilio: ^4.15
+    twilio: ^4.16
     winston: ^3.10.0
     yargs: ^17.7.2
   languageName: unknown
@@ -3135,9 +3135,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"twilio@npm:^4.15":
-  version: 4.15.0
-  resolution: "twilio@npm:4.15.0"
+"twilio@npm:^4.16":
+  version: 4.16.0
+  resolution: "twilio@npm:4.16.0"
   dependencies:
     axios: ^0.26.1
     dayjs: ^1.11.9
@@ -3147,7 +3147,7 @@ __metadata:
     scmp: ^2.1.0
     url-parse: ^1.5.9
     xmlbuilder: ^13.0.2
-  checksum: 6b57664389346cbad97747383f5febe447b91e51e7f4c7180e33a3a6c2c1ebb2010c6a9c62c0b52c6a8d242a056be15918cfc85f6a09dc81ca9110a96d6625e2
+  checksum: 2ff4d82bd1679e85b1a72c297ad769c05cae07ef48b0dae73a534587e2bc910c42723941c2652816ccec454d32570999c501ff68cc2e0bee12b5d53091c3f877
   languageName: node
   linkType: hard
 
