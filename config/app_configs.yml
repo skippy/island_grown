@@ -20,7 +20,7 @@ approved_vendors:
   "BARN OWL BAKERY": 98261
   "BUCK BAY SHELLFISH": 98279
   "JOON FARM": 98250
-  "KARI'S ISLAND ELIXIRS": 98250
+  # "KARI'S ISLAND ELIXIRS": 98250
   "LOPEZ VILLAGE FARM": 98261
   "LUM FARM": 98245
   "MAMA BIRD": 98250
@@ -124,7 +124,6 @@ sms_vendors_msg: >
   San Juan Island
    * Aurora Farm
    * Joon Farm
-   * Kari's Island Elixirs
    * Mama Bird Farm
    * New Hannah Farm
    * San Juan Co-Op
