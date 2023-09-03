@@ -32,7 +32,10 @@ export const whAuthorization = async (req, res) => {
     // case 'issuing_authorization.created':
       logger.debug(merchantData)
 
-      const merchantName = _.escape(merchantData.name).toLowerCase()
+      // NOTE: escaping means if a vendor has a character, like a ' in their name,
+      // then we can't match it.
+      // const merchantName = _.escape(merchantData.name).toLowerCase()
+      const merchantName = merchantData.name.toLowerCase()
       const vendors = config.get('approved_vendors')
       const approvedPostalCodes = config.get('approved_postal_codes')
       const foundVendor = Object.keys(vendors).find(vn => merchantName.match(new RegExp(vn, 'i')) !== null)
