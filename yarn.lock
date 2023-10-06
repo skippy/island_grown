@@ -1852,7 +1852,7 @@ __metadata:
     lodash: ^4.17.21
     mocha: ^10.2.0
     sinon: ^15.2.0
-    stripe: ^13.4.0
+    stripe: ^13.9.0
     twilio: ^4.16
     winston: ^3.10.0
     yargs: ^17.7.2
@@ -3029,13 +3029,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stripe@npm:^13.4.0":
-  version: 13.4.0
-  resolution: "stripe@npm:13.4.0"
+"stripe@npm:^13.9.0":
+  version: 13.9.0
+  resolution: "stripe@npm:13.9.0"
   dependencies:
     "@types/node": ">=8.1.0"
     qs: ^6.11.0
-  checksum: 8036e4daa69521046b7c1e3243e6a2adc19bd69c403bef7275c75d77a0673abe7ca164816bc8a281fe0fc8ac7253afaa727a2e36f55bb9c862b8d88aa44d59d2
+  checksum: 05b83baf7c8baf39af8f11e3f21264cb1857718afa6f59258bc2fabce20af82b04f3ee6ae49b883c45395230f4adeb4c4e98a6a204c86b9b654a9e3d31799db3
   languageName: node
   linkType: hard
 
