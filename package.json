@@ -39,7 +39,7 @@
     "libphonenumber-js": "^1.10.43",
     "lodash": "^4.17.21",
     "stripe": "^13.4.0",
-    "twilio": "^4.16",
+    "twilio": "^4.18",
     "winston": "^3.10.0",
     "yargs": "^17.7.2"
   },
