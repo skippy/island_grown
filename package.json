@@ -38,7 +38,7 @@
     "js-yaml": "^4.1.0",
     "libphonenumber-js": "^1.10.48",
     "lodash": "^4.17.21",
-    "stripe": "^13.4.0",
+    "stripe": "^14.1.0",
     "twilio": "^4.18",
     "winston": "^3.10.0",
     "yargs": "^17.7.2"
