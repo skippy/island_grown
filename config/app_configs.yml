@@ -44,8 +44,8 @@ approved_vendors:
   "GIRL MEETS DIRT": 98250
   "SAN JUAN ISLAND SE": 98250
   "SANJUANSEASALT": 98250
-  "VENMO *SWEET EARTH FA": 10014   # their venmo version; if the zip doesn't match, it will match the approved postal codes # ve
-  "PAYPAL *SWEETEARTHF": 95131
+  "VENMO\\s*\\*SWEET EARTH FA": 10014   # their venmo version; if the zip doesn't match, it will match the approved postal codes # ve
+  "PAYPAL\\s*\\*SWEETEARTHF": 95131
 
 sms_declined_vendor_not_found_submsg: >
   'VENDOR_NAME' is not a verified Island Grown Card vendor.
